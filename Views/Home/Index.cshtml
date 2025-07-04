@@ -1,1 +1,8 @@
-﻿
+﻿@using UserRoles.Dtos.ResponseDtos;
+@{
+    var carouselImages = ViewBag.CarouselImages as List<CarousalImageResponseDto>;
+}
+
+
+@await Html.PartialAsync("_Navbar")
+@await Html.PartialAsync("_Carousel", carouselImages)

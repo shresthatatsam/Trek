@@ -1,4 +1,5 @@
-﻿using UserRoles.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using UserRoles.Data;
 using UserRoles.Dtos.RequestDtos;
 using UserRoles.Dtos.ResponseDtos;
 using UserRoles.Models;
@@ -67,5 +68,50 @@ namespace UserRoles.Services
         }
 
 
-    }
+        public async Task<List<CarousalImageResponseDto>> List(CarousalEnum carousalEnum)
+        {
+            return await _context.CarousalImages.Where(x=>x.carousalEnum == carousalEnum && x.IsActive).AsNoTracking().Select(x=> new CarousalImageResponseDto
+            {
+                Id = x.Id,
+                Caption = x.Caption,
+                SubCaption = x.SubCaption,
+                ImageUrl= x.ImageUrl
+
+            }).ToListAsync();
+        }
+    
+		public async Task<bool> Delete(Guid id)
+		{
+			// Only select ImageUrl to avoid fetching entire entity
+			var imageData = await _context.CarousalImages
+				.Where(x => x.Id == id)
+				.Select(x => new { x.Id, x.ImageUrl })
+				.FirstOrDefaultAsync();
+
+			if (imageData == null)
+				return false;
+
+			// Build physical file path
+			if (!string.IsNullOrEmpty(imageData.ImageUrl))
+			{
+				var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imageData.ImageUrl.TrimStart('/'));
+
+				if (System.IO.File.Exists(filePath))
+				{
+					System.IO.File.Delete(filePath);
+				}
+			}
+
+			// Only create entity with Id to avoid unnecessary tracking
+			var entity = new CarousalImage { Id = imageData.Id };
+			_context.CarousalImages.Attach(entity);
+			_context.CarousalImages.Remove(entity);
+
+			await _context.SaveChangesAsync();
+
+			return true;
+		}
+
+
+	}
 }
