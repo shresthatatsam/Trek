@@ -8,7 +8,7 @@ namespace UserRoles.Controllers
     public class CarousalController : Controller
     {
         private readonly ICarousalService _carousalService;
-        public CarousalController( ICarousalService carousalService)
+        public CarousalController(ICarousalService carousalService)
         {
             this._carousalService = carousalService;
         }
@@ -32,6 +32,14 @@ namespace UserRoles.Controllers
             ModelState.AddModelError("", "Failed to upload image.");
             return View(dto);
         }
+
+
+        //[HttpGet]
+        //public async Task<IActionResult> List()
+        //{
+        //    var 
+        //}
+            
 
     }
 }

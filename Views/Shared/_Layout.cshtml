@@ -10,45 +10,36 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.1/mdb.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/UserRoles.styles.css" asp-append-version="true" />
 
-    @*     <style>
-        /* Optional custom styling tweaks */
-        body {
-
-            background-color: #f8f9fa;
-        }
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.5rem;
-        }
-        footer {
-            padding: 1rem 0;
-            background-color: #fff;
-            color: #6c757d;
-        }
-    </style> *@
 </head>
 <body>
 
     <!-- Navbar -->
-    <header>
+ @*    <header> *@
 
         @if(User.IsInRole("Admin"))
         {
+            
+<div class="wrapper">
             @await Html.PartialAsync("_AdminHeader")
+            <main class="content">
+                @RenderBody()
+            </main>
+            </div>
         }
         else
         {
-                        @await Html.PartialAsync("_Header")
+       
+        
             
         }
 
 
-    </header>
+    @* </header> *@
 
     <!-- Main content -->
-    <main class="container py-4">
+  
         @RenderBody()
-    </main>
+         
 
     <!-- Footer -->
     <footer class="border-top text-center text-muted">

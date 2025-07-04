@@ -14,15 +14,21 @@ namespace UserRoles.Controllers
         public HomeController(ILogger<HomeController> logger, ICarousalService carousalService)
         {
             _logger = logger;
-            this._carousalService = carousalService;
+            _carousalService = carousalService;
+        }
+
+
+
+     
+
+        public async Task<IActionResult> Index()
+        {   
+            var carouselImages = await _carousalService.List(CarousalEnum.Home);
+            ViewBag.CarouselImages = carouselImages;
+            return View();
         }
 
       
-        public IActionResult Index()
-        {
-            
-            return View();
-        }
 
 
         [Authorize]
