@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - UserRoles</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.1/mdb.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/UserRoles.styles.css" asp-append-version="true" />
+
+    @*     <style>
+        /* Optional custom styling tweaks */
+        body {
+
+            background-color: #f8f9fa;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        footer {
+            padding: 1rem 0;
+            background-color: #fff;
+            color: #6c757d;
+        }
+    </style> *@
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header>
+
+        @if(User.IsInRole("Admin"))
+        {
+            @await Html.PartialAsync("_AdminHeader")
+        }
+        else
+        {
+                        @await Html.PartialAsync("_Header")
+            
+        }
+
+
+    </header>
+
+    <!-- Main content -->
+    <main class="container py-4">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-top text-center text-muted">
+        <div class="container">
+            &copy; 2025 - UserRoles - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.1/mdb.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
