@@ -1,5 +1,10 @@
-﻿@using Microsoft.AspNetCore.Identity;
-@inject SignInManager<Users> signInManager;
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<Users> signInManager
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var currentPath = HttpContextAccessor.HttpContext?.Request.Path.Value?.ToLower() ?? "";
+}
 
 <style>
     html, body {
@@ -101,38 +106,41 @@
     }
 </style>
 
+<nav class="navbar navbar-dark bg-dark">
+    <button class="toggle-sidebar-btn" onclick="toggleSidebar()">☰</button>
+    <a class="navbar-brand" href="/">TREK Admin</a>
+</nav>
+
+<!-- Sidebar -->
+<div id="sidebar" class="sidebar">
+    <h5>Navigation</h5>
+
+    <a class="@(currentPath == "/dashboard" ? "active" : "")" href="/dashboard">Dashboard</a>
+    <a class="@(currentPath == "/profile" ? "active" : "")" href="/profile">Profile</a>
+    <a class="@(currentPath == "/settings" ? "active" : "")" href="/settings">Settings</a>
+    <a class="@(currentPath == "/help" ? "active" : "")" href="/help">Help</a>
+    <a class="@(currentPath == "/carousal" ? "active" : "")" asp-controller="Carousal" asp-action="Index">Carousel</a>
+    <a class="@(currentPath == "/" ? "active" : "")" href="/">Home</a>
+
+    <hr />
+    @if (signInManager.IsSignedIn(User))
+    {
+        <form asp-controller="Account" asp-action="Logout" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-link text-white p-0">Logout</button>
+        </form>
+    }
+    else
+    {
+        <a class="@(currentPath == "/account/login" ? "active" : "")" asp-controller="Account" asp-action="Login">Login</a>
+        <a class="@(currentPath == "/account/register" ? "active" : "")" asp-controller="Account" asp-action="Register">Register</a>
+    }
+</div>
+
+<!-- Main Content (put this wherever you're rendering your main view) -->
 
 
-    <!-- Sidebar -->
-    <div id="sidebar" class="sidebar">
-        <h5>Navigation</h5>
-        <a href="#">Dashboard</a>
-        <a href="#">Profile</a>
-        <a href="#">Settings</a>
-        <a href="#">Help</a>
-        <a asp-controller="Carousal" asp-action="Index">Carousel</a>
-
-        <a href="#intro">Home</a>
-
-        <hr />
-        @if (signInManager.IsSignedIn(User))
-        {
-            <form asp-controller="Account" asp-action="Logout" method="post">
-                @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-link text-white p-0">Logout</button>
-            </form>
-        }
-        else
-        {
-            <a asp-controller="Account" asp-action="Login">Login</a>
-            <a asp-controller="Account" asp-action="Register">Register</a>
-        }
-    </div>
-
-    <!-- Main Content -->
- 
-
-<!-- Toggle Sidebar Script -->
+<!-- Sidebar Toggle Script -->
 <script>
     function toggleSidebar() {
         document.getElementById("sidebar").classList.toggle("active");
