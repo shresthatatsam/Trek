@@ -28,6 +28,8 @@ builder.Services.AddIdentity<Users, IdentityRole>(options =>
 
 builder.Services.AddScoped<ICarousalService, CarousalServices>();
 
+builder.Services.AddScoped<IAboutUsService, AboutUsService>();
+
 
 var app = builder.Build();
 

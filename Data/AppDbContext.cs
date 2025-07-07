@@ -12,10 +12,20 @@ namespace UserRoles.Data
         }
 
         public DbSet<CarousalImage> CarousalImages { get; set; }
+        public DbSet<AboutUs> AboutUs { get; set; }
+        public DbSet<TeamMember> TeamMembers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+
             base.OnModelCreating(modelBuilder);
+           
+            modelBuilder.Entity<TeamMember>()
+               .HasOne(tm => tm.AboutUsSection)
+               .WithMany(a => a.TeamMembers)
+               .HasForeignKey(tm => tm.AboutUsSectionId)
+               .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.ApplyConfiguration(new CarousalImageConfiguration());
         }

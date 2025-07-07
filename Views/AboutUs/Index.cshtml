@@ -1,56 +1,43 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - Trekking</title>
-    <style>
-       
+﻿@* @using UserRoles.Dtos.ResponseDtos;
+@{
+    var carouselImages = ViewBag.CarouselImages as List<CarousalImageResponseDto>;
+}
 
-        .about-section {
-            text-align: center;
-            padding: 50px 20px;
-            background-color: #fff;
-            border-top: 1px solid #eee;
-            border-bottom: 1px solid #eee;
-        }
 
-        .about-section h2 {
-            font-size: 2rem;
-            position: relative;
-            display: inline-block;
-            margin-bottom: 20px;
-        }
+@await Html.PartialAsync("_Navbar")
+@await Html.PartialAsync("_Carousel", carouselImages)  *@
 
-        .about-section h2::before,
-        .about-section h2::after {
-            content: "";
-            display: inline-block;
-            width: 40px;
-            height: 2px;
-            background-color: #e74c3c;
-            vertical-align: middle;
-            margin: 0 15px;
-        }
+@model AboutUs
 
-        .about-section p {
-            max-width: 600px;
-            margin: 0 auto 40px auto;
-            line-height: 1.6;
-            color: #555;
-        }
+<h2>@Model.Title</h2>
+<p><strong>Mission:</strong> @Model.Mission</p>
+<p><strong>Story:</strong> @Model.Story</p>
 
-    </style>
-</head>
-<body>
+<h3>Team Members</h3>
+@* <ul>
+    @foreach (var member in Model.TeamMembers)
+    {
+        <li>
+            <img src="@member.PhotoUrl" alt="@member.Name" width="50" />
+            <strong>@member.Name</strong> - @member.Role
+            <p>@member.Bio</p>
 
-    <section class="about-section">
-        <h2>About us</h2>
-        <p>
-            Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.
-        </p>
-  
-    </section>
+            <form asp-action="DeleteTeamMember" method="post">
+                <input type="hidden" name="id" value="@member.Id" />
+                <button type="submit">Delete</button>
+            </form>
+        </li>
+    }
+</ul> *@
 
-</body>
-</html>
+<h4>Add Team Member</h4>
+<form asp-action="AddTeamMember" method="post">
+    <input type="hidden" name="AboutUsSectionId" value="@Model.Id" />
+    <input name="Name" placeholder="Name" />
+    <input name="Role" placeholder="Role" />
+    <input name="PhotoUrl" placeholder="Photo URL" />
+    <textarea name="Bio" placeholder="Bio"></textarea>
+    <button type="submit">Add</button>
+</form>
+
+<a asp-action="Edit">Edit About Us</a>

@@ -58,10 +58,13 @@
 
             <div class="collapse navbar-collapse" id="navbarExample01">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                    @* @currentPath *@
+
                     <li class="nav-item @(currentPath == "/" ? "active" : "")">
                         <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
-                    <li class="nav-item @(currentPath.Contains("/AboutUs") ? "active" : "")">
+                    <li class="nav-item @(currentPath.Contains("/aboutus") ? "active" : "")">
                         <a class="nav-link" asp-controller="AboutUs" asp-action="Index">About</a>
                     </li>
                     <li class="nav-item @(currentPath.Contains("/content") ? "active" : "")">
