@@ -18,9 +18,9 @@ namespace UserRoles.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var carouselImages = await _carousalService.List(CarousalEnum.Content);
-            var aboutUs = await _service.GetAboutUsAsync();
-            ViewBag.CarouselImages = carouselImages;
+            //var carouselImages = await _carousalService.List(CarousalEnum.Content);
+            //var aboutUs = await _service.GetAboutUsAsync();
+            //ViewBag.CarouselImages = carouselImages;
             return View();
         }
 

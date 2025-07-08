@@ -27,12 +27,12 @@ namespace UserRoles.Services
 
                 // Add admin user
                 logger.LogInformation("Seeding admin user.");
-                var adminEmail = "admin@codehub.com";
+                var adminEmail = "admin@test.com";
                 if (await userManager.FindByEmailAsync(adminEmail) == null)
                 {
                     var adminUser = new Users
                     {
-                        FullName = "Code Hub",
+                        FullName = "Admin",
                         UserName = adminEmail,
                         NormalizedUserName = adminEmail.ToUpper(),
                         Email = adminEmail,
