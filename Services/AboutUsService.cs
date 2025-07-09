@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UserRoles.Data;
+using UserRoles.Dtos.RequestDtos;
+using UserRoles.Dtos.ResponseDtos;
 using UserRoles.Models;
 using UserRoles.Services.Interface;
 
@@ -13,46 +15,69 @@ namespace UserRoles.Services
         {
             _context = context;
         }
-
-        public async Task<AboutUs> GetAboutUsAsync()
+        public async Task AddOrUpdateAboutUsAsync(AboutUsRequestDto viewModel)
         {
-             return await _context.AboutUs
-                    .Include(a => a.TeamMembers)
-                    .FirstOrDefaultAsync();
-        }
+            var aboutUs = viewModel.Id.HasValue
+                ? await _context.AboutUs
+                      .Include(a => a.TeamMembers)
+                      .FirstOrDefaultAsync(a => a.Id == viewModel.Id)
+                : new AboutUs { Id = Guid.NewGuid(), TeamMembers = new List<TeamMember>() };
 
-        public async Task UpdateAboutUsAsync(AboutUs aboutUs)
-        {
-            var existing = await _context.AboutUs.Include(a => a.TeamMembers).FirstOrDefaultAsync();
-            if (existing != null)
+            if (aboutUs == null)
+                throw new Exception("AboutUs not found.");
+
+            aboutUs.Title = viewModel.Title;
+            aboutUs.Mission = viewModel.Mission;
+            aboutUs.Story = viewModel.Story;
+
+            // Clear existing team members and re-add (simplest way)
+            if (viewModel.Id.HasValue)
             {
-                existing.Title = aboutUs.Title;
-                existing.Mission = aboutUs.Mission;
-                existing.Story = aboutUs.Story;
-                _context.Update(existing);
+                _context.TeamMembers.RemoveRange(aboutUs.TeamMembers);
             }
-            else
+
+            aboutUs.TeamMembers = viewModel.TeamMembers.Select(tm => new TeamMember
             {
-                _context.Add(aboutUs);
-            }
+                Id = tm.Id ?? Guid.NewGuid(),
+                Name = tm.Name,
+                Role = tm.Role,
+                PhotoUrl = tm.PhotoUrl,
+                Bio = tm.Bio,
+                AboutUsSectionId = aboutUs.Id
+            }).ToList();
+
+            if (!viewModel.Id.HasValue)
+                _context.AboutUs.Add(aboutUs);
 
             await _context.SaveChangesAsync();
         }
 
-        public async Task AddTeamMemberAsync(TeamMember member)
+        public async Task<AboutUsResponseDto> GetAboutUsForEditAsync()
         {
-            _context.TeamMembers.Add(member);
-            await _context.SaveChangesAsync();
+            var aboutUs = await _context.AboutUs
+                .Include(a => a.TeamMembers)
+                .FirstOrDefaultAsync();
+
+            if (aboutUs == null)
+                return new AboutUsResponseDto(); 
+
+            return new AboutUsResponseDto
+            {
+                Id = aboutUs.Id,
+                Title = aboutUs.Title,
+                Mission = aboutUs.Mission,
+                Story = aboutUs.Story,
+                TeamMembers = aboutUs.TeamMembers.Select(tm => new TeamMemberResponseDto
+                {
+                    Id = tm.Id,
+                    Name = tm.Name,
+                    Role = tm.Role,
+                    PhotoUrl = tm.PhotoUrl,
+                    Bio = tm.Bio
+                }).ToList()
+            };
         }
 
-        public async Task RemoveTeamMemberAsync(Guid memberId)
-        {
-            var member = await _context.TeamMembers.FindAsync(memberId);
-            if (member != null)
-            {
-                _context.TeamMembers.Remove(member);
-                await _context.SaveChangesAsync();
-            }
-        }
+
     }
 }

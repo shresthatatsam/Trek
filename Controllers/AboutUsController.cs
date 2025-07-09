@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using UserRoles.Dtos.RequestDtos;
 using UserRoles.Models;
 using UserRoles.Services.Interface;
 
@@ -25,43 +26,44 @@ namespace UserRoles.Controllers
         }
 
 
-
-        [HttpGet]
-        public async Task<IActionResult> Edit()
+        public async Task<IActionResult> Create()
         {
-            var aboutUs = await _service.GetAboutUsAsync();
-            return View(aboutUs);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Edit(AboutUs model)
-        {
-            if (ModelState.IsValid)
-            {
-                await _service.UpdateAboutUsAsync(model);
-                return RedirectToAction("Index");
-            }
-
+            var model = new AboutUsRequestDto();
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddTeamMember(TeamMember member)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(AboutUsRequestDto model)
         {
             if (ModelState.IsValid)
             {
-                await _service.AddTeamMemberAsync(member);
+                await _service.AddOrUpdateAboutUsAsync(model);
+                return RedirectToAction("Index");
             }
-
-            return RedirectToAction("Index");
+            return View(model);
         }
+
+        //public async Task<IActionResult> Update(Guid id)
+        //{
+        //    var aboutUs = await _service.GetByIdAsync(id);
+        //    if (aboutUs == null) return NotFound();
+        //    return View(aboutUs);
+        //}
 
         [HttpPost]
-        public async Task<IActionResult> DeleteTeamMember(Guid id)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(AboutUsRequestDto model)
         {
-            await _service.RemoveTeamMemberAsync(id);
-            return RedirectToAction("Index");
+            if (ModelState.IsValid)
+            {
+                await _service.AddOrUpdateAboutUsAsync(model);
+                return RedirectToAction("Index");
+            }
+            return View(model);
         }
+
+
 
     }
 }

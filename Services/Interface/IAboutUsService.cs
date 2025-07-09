@@ -1,13 +1,13 @@
-﻿using UserRoles.Models;
+﻿using UserRoles.Dtos.RequestDtos;
+using UserRoles.Dtos.ResponseDtos;
+using UserRoles.Models;
 
 namespace UserRoles.Services.Interface
 {
     public interface IAboutUsService
     {
-        Task<AboutUs> GetAboutUsAsync();
-        Task UpdateAboutUsAsync(AboutUs aboutUs);
-        Task AddTeamMemberAsync(TeamMember member);
-        Task RemoveTeamMemberAsync(Guid memberId);
+        Task AddOrUpdateAboutUsAsync(AboutUsRequestDto viewModel);
+        Task<AboutUsResponseDto> GetAboutUsForEditAsync();
     }
 }
   
