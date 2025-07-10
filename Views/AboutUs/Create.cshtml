@@ -1,1 +1,112 @@
-﻿
+﻿@model UserRoles.Dtos.RequestDtos.AboutUsRequestDto
+
+@{
+    ViewData["Title"] = "Create About Us";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="Title"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Mission"></label>
+        <textarea asp-for="Mission" class="form-control"></textarea>
+        <span asp-validation-for="Mission" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Story"></label>
+        <textarea asp-for="Story" class="form-control"></textarea>
+        <span asp-validation-for="Story" class="text-danger"></span>
+    </div>
+
+    <hr />
+    <h4>Team Members</h4>
+    <div id="team-members">
+        @for (int i = 0; i < Model.TeamMembers.Count; i++)
+        {
+            <div class="team-member border p-3 mb-3">
+                <input type="hidden" asp-for="TeamMembers[@i].Id" />
+
+                <div class="form-group">
+                    <label asp-for="TeamMembers[@i].Name">Name</label>
+                    <input asp-for="TeamMembers[@i].Name" class="form-control" />
+                    <span asp-validation-for="TeamMembers[@i].Name" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="TeamMembers[@i].Role">Role</label>
+                    <input asp-for="TeamMembers[@i].Role" class="form-control" />
+                    <span asp-validation-for="TeamMembers[@i].Role" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="TeamMembers[@i].PhotoUrl">Photo URL</label>
+                    <input asp-for="TeamMembers[@i].PhotoUrl" class="form-control" />
+                    <span asp-validation-for="TeamMembers[@i].PhotoUrl" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="TeamMembers[@i].Bio">Bio</label>
+                    <textarea asp-for="TeamMembers[@i].Bio" class="form-control"></textarea>
+                    <span asp-validation-for="TeamMembers[@i].Bio" class="text-danger"></span>
+                </div>
+
+                <button type="button" class="btn btn-danger" onclick="removeTeamMember(this)">Remove</button>
+            </div>
+        }
+    </div>
+
+    <button type="button" class="btn btn-secondary mb-3" onclick="addTeamMember()">Add Team Member</button>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        let teamMemberIndex = @Model.TeamMembers.Count;
+
+        function addTeamMember() {
+            const container = document.getElementById("team-members");
+            const html = `
+                <div class="team-member border p-3 mb-3">
+                    <input type="hidden" name="TeamMembers[${teamMemberIndex}].Id" value="" />
+
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input name="TeamMembers[${teamMemberIndex}].Name" class="form-control" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Role</label>
+                        <input name="TeamMembers[${teamMemberIndex}].Role" class="form-control" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Photo URL</label>
+                        <input name="TeamMembers[${teamMemberIndex}].PhotoUrl" class="form-control" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Bio</label>
+                        <textarea name="TeamMembers[${teamMemberIndex}].Bio" class="form-control"></textarea>
+                    </div>
+
+                    <button type="button" class="btn btn-danger" onclick="removeTeamMember(this)">Remove</button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+            teamMemberIndex++;
+        }
+
+        function removeTeamMember(button) {
+            button.closest('.team-member').remove();
+        }
+    </script>
+}
