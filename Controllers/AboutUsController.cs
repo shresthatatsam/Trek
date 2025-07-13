@@ -27,7 +27,7 @@ namespace UserRoles.Controllers
 
 
         public async Task<IActionResult> Create()
-        {
+        {  
             var model = new AboutUsRequestDto();
             return View(model);
         }
@@ -39,7 +39,7 @@ namespace UserRoles.Controllers
             if (ModelState.IsValid)
             {
                 await _service.AddOrUpdateAboutUsAsync(model);
-                return RedirectToAction("Index");
+                return RedirectToAction("Create");
             }
             return View(model);
         }
@@ -57,7 +57,7 @@ namespace UserRoles.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _service.AddOrUpdateAboutUsAsync(model);
+                //await _service.AddOrUpdateAboutUsAsync(model);
                 return RedirectToAction("Index");
             }
             return View(model);

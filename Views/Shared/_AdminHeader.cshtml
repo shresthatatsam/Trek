@@ -16,100 +16,121 @@
 
     .wrapper {
         display: flex;
-        flex-direction: row;
         height: 100vh;
-       
     }
 
-    /* Sidebar */
     .sidebar {
-        width: 220px;
-        background-color: #333;
+        width: 240px;
+        background-color: #1e1e2f;
         color: #fff;
-        padding: 1rem;
+        padding: 1.5rem 1rem;
         position: fixed;
-        top: 6px;
+        top: 0;
         bottom: 0;
         left: 0;
         overflow-y: auto;
-        transition: transform 0.3s ease;
+        transition: all 0.3s ease;
         z-index: 1000;
     }
 
-        .sidebar a {
-            display: block;
-            color: #fff;
-            padding: 0.5rem 0;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-            .sidebar a:hover {
-                color: #00d1b2;
-            }
-
-    /* Main content */
-    .content {
-        margin-left: 220px;
-        padding: 1rem;
-        flex: 1;
-        transition: margin-left 0.3s ease;
+    .sidebar h5 {
+        color: #00d1b2;
+        margin-bottom: 1rem;
     }
 
-    /* Toggle button */
+    .sidebar a {
+        display: block;
+        color: #ccc;
+        padding: 0.5rem 1rem;
+        margin: 0.3rem 0;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: 500;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+        background-color: #00d1b2;
+        color: #fff;
+    }
+
+    .sidebar form {
+        margin-top: 1rem;
+    }
+
+    .sidebar .btn-link {
+        color: #ccc;
+        text-decoration: none;
+    }
+
+    .sidebar .btn-link:hover {
+        color: #fff;
+    }
+
+    .content {
+        margin-left: 240px;
+        padding: 2rem;
+        transition: margin-left 0.3s ease;
+        width: 100%;
+    }
+
+    /* Toggle Button (Mobile) */
     .toggle-sidebar-btn {
         display: none;
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        background-color: #00d1b2;
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        font-size: 1.2rem;
+        border-radius: 5px;
+        z-index: 1100;
+    }
+
+    .sidebar-link {
         background: none;
         border: none;
-        color: #fff;
-        font-size: 1.5rem;
-        margin-right: 1rem;
-    }
-
-    /* Responsive styles */
-    media (max-width: 768px) {
-        .sidebar
-
-    {
-        transform: translateX(-100%);
-    }
-
-    .sidebar.active {
-        transform: translateX(0);
-    }
-
-    .content {
-        margin-left: 0;
-    }
-
-    .toggle-sidebar-btn {
-        display: inline-block;
-    }
-
-    }
-
-    /* Navbar */
-    nav.navbar {
-        position: fixed;
+        color: #ccc;
+        padding: 0.5rem 1rem;
+        margin: 0.3rem 0;
+        text-align: left;
         width: 100%;
-        z-index: 3000;
-        background: rgba(0, 0, 0, 0.85);
+        display: block;
+        text-decoration: none;
+        font-weight: 500;
+        cursor: pointer;
+        border-radius: 5px;
     }
 
-    .navbar-brand,
-    .navbar-nav .nav-link {
-        color: #fff !important;
-    }
+        .sidebar-link:hover {
+            background-color: #00d1b2;
+            color: #fff;
+        }
 
-    .navbar-toggler-icon {
-        background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+
+    media (max-width: 768px) {
+        .sidebar {
+            transform: translateX(-100%);
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .content {
+            margin-left: 0;
+        }
+
+        .toggle-sidebar-btn {
+            display: inline-block;
+        }
     }
 </style>
 
-<nav class="navbar navbar-dark bg-dark">
-    <button class="toggle-sidebar-btn" onclick="toggleSidebar()">☰</button>
-    <a class="navbar-brand" href="/">TREK Admin</a>
-</nav>
+<!-- Sidebar Toggle Button -->
+<button class="toggle-sidebar-btn" onclick="toggleSidebar()">☰</button>
 
 <!-- Sidebar -->
 <div id="sidebar" class="sidebar">
@@ -119,16 +140,17 @@
     <a class="@(currentPath == "/profile" ? "active" : "")" href="/profile">Profile</a>
     <a class="@(currentPath == "/settings" ? "active" : "")" href="/settings">Settings</a>
     <a class="@(currentPath == "/help" ? "active" : "")" href="/help">Help</a>
-    <a class="@(currentPath == "/carousal" ? "active" : "")" asp-controller="Carousal" asp-action="Index">Carousel</a>
-    <a class="@(currentPath == "/AboutUs" ? "active" : "")" asp-controller="AboutUs" asp-action="Create">About</a>
-    <a class="@(currentPath == "/" ? "active" : "")" href="/">Home</a>
+    <a class="@(currentPath == "/" ? "active" : "")" asp-controller="Carousal" asp-action="Index">Carousel</a>
+    <a class="@(currentPath == "/aboutus" ? "active" : "")" asp-controller="AboutUs" asp-action="Create">About</a>
+    @* <a class="@(currentPath == "/" ? "active" : "")" href="/">Home</a> *@
 
     <hr />
+
     @if (signInManager.IsSignedIn(User))
     {
-        <form asp-controller="Account" asp-action="Logout" method="post">
+        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
             @Html.AntiForgeryToken()
-            <button type="submit" class="btn btn-link text-white p-0">Logout</button>
+            <button type="submit" class="sidebar-link">Logout</button>
         </form>
     }
     else
@@ -138,10 +160,7 @@
     }
 </div>
 
-<!-- Main Content (put this wherever you're rendering your main view) -->
-
-
-<!-- Sidebar Toggle Script -->
+<!-- Toggle Script -->
 <script>
     function toggleSidebar() {
         document.getElementById("sidebar").classList.toggle("active");

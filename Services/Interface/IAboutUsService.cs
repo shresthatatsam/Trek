@@ -7,7 +7,7 @@ namespace UserRoles.Services.Interface
     public interface IAboutUsService
     {
         Task AddOrUpdateAboutUsAsync(AboutUsRequestDto viewModel);
-        Task<AboutUsResponseDto> GetAboutUsForEditAsync();
+        //Task<AboutUsResponseDto> GetAboutUsForEditAsync();
     }
 }
   

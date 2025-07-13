@@ -7,7 +7,6 @@
         public string Mission { get; set; }
         public string Story { get; set; }
 
-        public ICollection<TeamMember> TeamMembers { get; set; }
 
     }
 }

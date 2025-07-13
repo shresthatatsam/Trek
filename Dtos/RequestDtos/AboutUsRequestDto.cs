@@ -12,7 +12,6 @@ namespace UserRoles.Dtos.RequestDtos
 
         public string Story { get; set; }
 
-        public List<TeamMemberRequestDto> TeamMembers { get; set; } = new();
     }
  
 }

@@ -41,7 +41,8 @@ namespace UserRoles.Controllers
             }
 
             ModelState.AddModelError(string.Empty, "Invalid Login Attempt.");
-            return View(model);
+            //return View(model);
+            return RedirectToAction("Index", "Carousal");
         }
 
         [HttpGet]

@@ -21,12 +21,6 @@ namespace UserRoles.Data
 
             base.OnModelCreating(modelBuilder);
            
-            modelBuilder.Entity<TeamMember>()
-               .HasOne(tm => tm.AboutUsSection)
-               .WithMany(a => a.TeamMembers)
-               .HasForeignKey(tm => tm.AboutUsSectionId)
-               .OnDelete(DeleteBehavior.Cascade);
-
             modelBuilder.ApplyConfiguration(new CarousalImageConfiguration());
         }
 

@@ -8,9 +8,5 @@
         public string PhotoUrl { get; set; }
         public string Bio { get; set; }
 
-        public Guid AboutUsSectionId { get; set; }
-
-        // Navigation property
-        public AboutUs AboutUsSection { get; set; }
     }
 }
