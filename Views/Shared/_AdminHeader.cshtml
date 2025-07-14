@@ -136,13 +136,30 @@
 <div id="sidebar" class="sidebar">
     <h5>Navigation</h5>
 
-    <a class="@(currentPath == "/dashboard" ? "active" : "")" href="/dashboard">Dashboard</a>
-    <a class="@(currentPath == "/profile" ? "active" : "")" href="/profile">Profile</a>
-    <a class="@(currentPath == "/settings" ? "active" : "")" href="/settings">Settings</a>
-    <a class="@(currentPath == "/help" ? "active" : "")" href="/help">Help</a>
-    <a class="@(currentPath == "/" ? "active" : "")" asp-controller="Carousal" asp-action="Index">Carousel</a>
-    <a class="@(currentPath == "/aboutus" ? "active" : "")" asp-controller="AboutUs" asp-action="Create">About</a>
-    @* <a class="@(currentPath == "/" ? "active" : "")" href="/">Home</a> *@
+    <div class="dropdown">
+        <a class="dropdown-toggle @(currentPath.StartsWith("/Carousal") ? "active" : "")" data-bs-toggle="collapse" href="#carousalMenu" role="button" aria-expanded="false" aria-controls="carousalMenu">
+            Carousel
+        </a>
+        <div class="collapse @(currentPath.StartsWith("/Carousal") ? "show" : "")" id="carousalMenu">
+            <ul class="list-unstyled ps-3">
+                <li><a class="@(currentPath == "/Carousal/Create" ? "active" : "")" asp-controller="Carousal" asp-action="Create">Create Carousel</a></li>
+                <li><a class="@(currentPath == "/Carousal/Index" ? "active" : "")" asp-controller="Carousal" asp-action="Index">List Carousel</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- About Us Dropdown -->
+    <div class="dropdown">
+        <a class="dropdown-toggle @(currentPath.StartsWith("/AboutUs") ? "active" : "")" data-bs-toggle="collapse" href="#aboutMenu" role="button" aria-expanded="false" aria-controls="aboutMenu">
+            About Us
+        </a>
+        <div class="collapse @(currentPath.StartsWith("/AboutUs") ? "show" : "")" id="aboutMenu">
+            <ul class="list-unstyled ps-3">
+                <li><a class="@(currentPath == "/AboutUs/Create" ? "active" : "")" asp-controller="AboutUs" asp-action="Create">Create About</a></li>
+                <li><a class="@(currentPath == "/AboutUs/Index" ? "active" : "")" asp-controller="AboutUs" asp-action="Index">List About</a></li>
+            </ul>
+        </div>
+    </div>
 
     <hr />
 

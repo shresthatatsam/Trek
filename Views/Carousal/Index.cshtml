@@ -1,57 +1,66 @@
-﻿@model UserRoles.Dtos.RequestDtos.CarousalImageRequestDto
+﻿@model List<UserRoles.Dtos.ResponseDtos.CarousalImageResponseDto>
 
 @{
-    ViewData["Title"] = "Upload Carousel Image";
+    ViewData["Title"] = "Carousel List";
 }
 
-<div class="container mt-5">
-    <div class="card shadow rounded-4">
-        <div class="card-header bg-primary text-white text-center rounded-top-4">
-            <h2 class="mb-0">@ViewData["Title"]</h2>
-        </div>
-        <div class="card-body p-4">
-            <form asp-action="Create" method="post" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label asp-for="ImageFile" class="form-label fw-semibold">Image</label>
-                    <input asp-for="ImageFile" type="file" class="form-control" />
-                    <span asp-validation-for="ImageFile" class="text-danger small"></span>
-                </div>
+<h2>Carousel Images</h2>
 
-                <div class="mb-3">
-                    <label asp-for="Caption" class="form-label fw-semibold">Caption</label>
-                    <input asp-for="Caption" class="form-control" placeholder="Enter main caption" />
-                    <span asp-validation-for="Caption" class="text-danger small"></span>
-                </div>
+<!-- Filter Dropdown -->
+<form method="get" class="mb-3">
+    <div class="input-group" style="max-width: 300px;">
+        <select name="filter" class="form-select" onchange="this.form.submit()">
+            @foreach (var item in (IEnumerable<CarousalEnum>)ViewBag.EnumOptions)
+            {
+                if (item == (CarousalEnum)ViewBag.CurrentFilter)
+                {
+                    <option value="@item" selected="selected">@item</option>
+                }
+                else
+                {
+                    <option value="@item">@item</option>
+                }
+            }
 
-                <div class="mb-3">
-                    <label asp-for="SubCaption" class="form-label fw-semibold">Sub Caption</label>
-                    <input asp-for="SubCaption" class="form-control" placeholder="Enter sub caption" />
-                    <span asp-validation-for="SubCaption" class="text-danger small"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="carousalEnum" class="form-label fw-semibold">Carousel Type</label>
-                    <select asp-for="carousalEnum" asp-items="Html.GetEnumSelectList<CarousalEnum>()" class="form-select">
-                        <option value="">-- Select Type --</option>
-                    </select>
-                    <span asp-validation-for="carousalEnum" class="text-danger small"></span>
-                </div>
-
-                <div class="form-check mb-4">
-                    <input asp-for="IsActive" class="form-check-input" />
-                    <label asp-for="IsActive" class="form-check-label">Is Active</label>
-                </div>
-
-                <div class="text-center">
-                    <button type="submit" class="btn btn-success px-4 py-2 rounded-pill">Upload</button>
-                </div>
-            </form>
-        </div>
+        </select>
+        <button type="submit" class="btn btn-primary">Filter</button>
     </div>
-</div>
+</form>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+<!-- Success/Error Messages -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
 }
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<!-- Table of Carousals -->
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Image</th>
+            <th>Caption</th>
+            <th>Sub Caption</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td><img src="@item.ImageUrl" alt="carousel image" width="120" /></td>
+                <td>@item.Caption</td>
+                <td>@item.SubCaption</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
