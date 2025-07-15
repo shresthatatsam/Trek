@@ -44,12 +44,7 @@ namespace UserRoles.Controllers
             return View(model);
         }
 
-        //public async Task<IActionResult> Update(Guid id)
-        //{
-        //    var aboutUs = await _service.GetByIdAsync(id);
-        //    if (aboutUs == null) return NotFound();
-        //    return View(aboutUs);
-        //}
+      
 
         [HttpPost]
         [ValidateAntiForgeryToken]

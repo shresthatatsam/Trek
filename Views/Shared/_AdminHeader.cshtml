@@ -161,6 +161,18 @@
         </div>
     </div>
 
+    <div class="dropdown">
+        <a class="dropdown-toggle @(currentPath.StartsWith("/Deals") ? "active" : "")" data-bs-toggle="collapse" href="#dealMenu" role="button" aria-expanded="false" aria-controls="dealMenu">
+           Deals
+        </a>
+        <div class="collapse @(currentPath.StartsWith("/deals") ? "show" : "")" id="dealMenu">
+            <ul class="list-unstyled ps-3">
+                <li><a class="@(currentPath == "/deal/Create" ? "active" : "")" asp-controller="Deal" asp-action="Create">Create Deal</a></li>
+                <li><a class="@(currentPath == "/deal/Index" ? "active" : "")" asp-controller="Deal" asp-action="Index">List Deal</a></li>
+            </ul>
+        </div>
+    </div>
+
     <hr />
 
     @if (signInManager.IsSignedIn(User))

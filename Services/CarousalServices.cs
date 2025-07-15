@@ -10,12 +10,12 @@ namespace UserRoles.Services
     public class CarousalServices :ICarousalService
     {
         private readonly AppDbContext _context;
-        private readonly IWebHostEnvironment _env;
+        private readonly IFileService _fileService;
 
-        public CarousalServices(AppDbContext context, IWebHostEnvironment env)
+        public CarousalServices(AppDbContext context, IFileService fileService)
         {
             _context = context;
-            _env = env;
+            _fileService = fileService;
         }
 
         public async Task<CarousalImageResponseDto> Create(CarousalImageRequestDto dto)
@@ -25,21 +25,9 @@ namespace UserRoles.Services
 
             string imageUrl = null;
 
-            // If there's an image file, save it to disk (like you did before)
-            if (dto.ImageFile != null && dto.ImageFile.Length > 0)
+            if(dto.ImageFile != null && dto.ImageFile.Length > 0)
             {
-                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "carousel-images");
-                Directory.CreateDirectory(uploadsFolder);
-
-                var uniqueFileName = $"{Guid.NewGuid()}_{dto.ImageFile.FileName}";
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await dto.ImageFile.CopyToAsync(fileStream);
-                }
-
-                imageUrl = $"/carousel-images/{uniqueFileName}";
+             imageUrl = await _fileService.SaveImageAsync(dto.ImageFile, "carousel-images");
             }
 
             var carouselImage = new CarousalImage
@@ -94,34 +82,14 @@ namespace UserRoles.Services
             entity.IsActive = dto.IsActive;
             entity.carousalEnum = dto.carousalEnum;
 
-            if (newImageFile != null && newImageFile.Length > 0)
+            if (dto.ImageFile != null && dto.ImageFile.Length > 0)
             {
-                // Delete old image file if exists
                 if (!string.IsNullOrEmpty(entity.ImageUrl))
-                {
-                    var oldFilePath = Path.Combine(_env.WebRootPath, entity.ImageUrl.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
-                    if (System.IO.File.Exists(oldFilePath))
-                    {
-                        System.IO.File.Delete(oldFilePath);
-                    }
-                }
+                    await _fileService.DeleteFileAsync(entity.ImageUrl);
 
-                // Save new image file
-                var uploadsFolder = Path.Combine(_env.WebRootPath, "carousel-images");
-                if (!Directory.Exists(uploadsFolder))
-                    Directory.CreateDirectory(uploadsFolder);
-
-                var uniqueFileName = $"{Guid.NewGuid()}_{newImageFile.FileName}";
-                var newFilePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var stream = new FileStream(newFilePath, FileMode.Create))
-                {
-                    await newImageFile.CopyToAsync(stream);
-                }
-
-                entity.ImageUrl = $"/carousel-images/{uniqueFileName}";
+                var imageUrl = await _fileService.SaveImageAsync(dto.ImageFile, "carousel-images");
+                entity.ImageUrl = imageUrl;
             }
-            // else keep old ImageUrl if no new file uploaded
 
             await _context.SaveChangesAsync();
             return true;

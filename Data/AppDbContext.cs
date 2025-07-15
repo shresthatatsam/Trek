@@ -12,6 +12,7 @@ namespace UserRoles.Data
         }
 
         public DbSet<CarousalImage> CarousalImages { get; set; }
+        public DbSet<Deals> Deals { get; set; }
         public DbSet<AboutUs> AboutUs { get; set; }
         public DbSet<TeamMember> TeamMembers { get; set; }
 
