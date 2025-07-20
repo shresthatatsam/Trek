@@ -8,6 +8,8 @@
         public string SubCaption { get; set; }
         public string Header { get; set; }
         public decimal Amount { get; set; }
+
+        public List<string> Features { get; set; }
         public string Details { get; set; }
         public bool Isactive { get; set; }
     }

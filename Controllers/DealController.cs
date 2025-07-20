@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using UserRoles.Dtos.RequestDtos;
 using UserRoles.Services;
 using UserRoles.Services.Interface;
@@ -52,6 +53,22 @@ namespace UserRoles.Controllers
             TempData[success ? "Success" : "Error"] = success ? "Updated successfully." : "Update failed.";
 
             return RedirectToAction(nameof(Index));
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var deal =await _dealService.Delete(id);
+            if (deal == null)
+            {
+                return NotFound();
+            }
+
+          
+
+            return RedirectToAction("Index"); // Or wherever you want to redirect after delete
         }
 
     }

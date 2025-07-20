@@ -8,6 +8,7 @@
         public string SubCaption { get; set; }
         public string ImageUrl { get; set; }
 
+        public string Features { get; set; }
         public string Header { get; set; }
         public decimal Amount { get; set; }
         public string Details { get; set; }

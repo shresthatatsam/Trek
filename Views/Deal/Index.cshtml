@@ -21,6 +21,8 @@
                         <th>Caption</th>
                         <th>Sub Caption</th>
                         <th>Amount</th>
+
+                        <th>Features</th>
                         <th>Is Active</th>
                         <th>Actions</th>
                     </tr>
@@ -39,6 +41,15 @@
                             <td>@deal.Caption</td>
                             <td>@deal.SubCaption</td>
                             <td>@deal.Amount.ToString("N2")</td>
+                            <td>
+                                <ul>
+                                    @foreach (var feature in deal.Features ?? new List<string>())
+                                    {
+                                        <li>@feature</li>
+                                    }
+                                </ul>
+                            </td>
+
                             <td>
                                 @if (deal.Isactive)
                                 {

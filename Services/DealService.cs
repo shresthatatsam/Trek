@@ -6,6 +6,7 @@ using UserRoles.Dtos.RequestDtos;
 using UserRoles.Dtos.ResponseDtos;
 using UserRoles.Models;
 using UserRoles.Services.Interface;
+using Newtonsoft.Json;
 
 namespace UserRoles.Services
 {
@@ -35,6 +36,14 @@ namespace UserRoles.Services
 
             }
 
+            var featuresList = dto.Features.ToString()?
+           .Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+           .ToList();
+
+
+            // Serialize features list to JSON
+            var serializedFeatures = JsonConvert.SerializeObject(featuresList);
+
             var deal = new Deals
             {
                 Id = Guid.NewGuid(),
@@ -45,12 +54,15 @@ namespace UserRoles.Services
                 Details = dto.Details,
                 Header = dto.Header,
                 Amount = dto.Amount,
+                Features = serializedFeatures
 
             };
 
             _context.Deals.Add(deal);
             await _context.SaveChangesAsync();
 
+
+            var deserializedFeatures = JsonConvert.DeserializeObject<List<string>>(serializedFeatures);
             // Prepare and return response DTO
             var responseDto = new DealResponseDto
             {
@@ -62,6 +74,7 @@ namespace UserRoles.Services
                 Details = deal.Details,
                 Header = dto.Header,
                 Amount = deal.Amount,
+                Features = deserializedFeatures
             };
 
             return responseDto;
@@ -81,7 +94,10 @@ namespace UserRoles.Services
                     Isactive = x.Isactive,
                     Details = x.Details,
                     Header = x.Header,
-                    Amount = x.Amount
+                    Amount = x.Amount,
+                    Features = string.IsNullOrEmpty(x.Features)
+                    ? new List<string>()
+                    : JsonConvert.DeserializeObject<List<string>>(x.Features)
                 })
                 .FirstOrDefaultAsync();
         }
@@ -91,12 +107,21 @@ namespace UserRoles.Services
             var entity = await _context.Deals.FirstOrDefaultAsync(x => x.Id == dto.Id);
             if (entity == null) return false;
 
+               
+
             entity.Caption = dto.Caption;
             entity.SubCaption = dto.SubCaption;
             entity.Isactive = dto.Isactive;
             entity.Details = dto.Details;
             entity.Header = dto.Header;
             entity.Amount = dto.Amount;
+
+            var featuresList = dto.Features?
+       .Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+       .Select(f => f.Trim())
+       .ToList();
+
+            entity.Features = JsonConvert.SerializeObject(featuresList);
 
             if (dto.ImageFile != null && dto.ImageFile.Length > 0)
             {
@@ -122,9 +147,10 @@ namespace UserRoles.Services
                 Isactive = x.Isactive,
                 Details = x.Details,
                 Header = x.Header,
-                Amount = x.Amount
-               
-
+                Amount = x.Amount,
+                Features = string.IsNullOrEmpty(x.Features)
+                    ? new List<string>()
+                    : JsonConvert.DeserializeObject<List<string>>(x.Features)
             }).ToListAsync();
         }
 
@@ -135,7 +161,7 @@ namespace UserRoles.Services
                 .Select(x => new { x.Id, x.ImageUrl })
                 .FirstOrDefaultAsync();
 
-            if (imageData == null)
+            if (imageData.Id == Guid.Empty)
                 return false;
 
             if (!string.IsNullOrEmpty(imageData.ImageUrl))

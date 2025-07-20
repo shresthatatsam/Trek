@@ -43,6 +43,12 @@
                 </div>
 
                 <div class="mb-3">
+                    <label asp-for="Features" class="form-label fw-semibold">Features (one per line)</label>
+                    <textarea asp-for="Features" class="form-control" rows="4" placeholder="e.g.&#10;Round trip airfare&#10;4D/3N Twin share room&#10;Full board meals"></textarea>
+                    <span asp-validation-for="Features" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
                     <label asp-for="Details" class="form-label fw-semibold">Details</label>
                     <textarea asp-for="Details" class="form-control" rows="4" placeholder="Enter deal details"></textarea>
                     <span asp-validation-for="Details" class="text-danger small"></span>
