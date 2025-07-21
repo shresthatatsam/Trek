@@ -13,7 +13,8 @@ namespace UserRoles.Dtos.ResponseDtos
 
         public string Story { get; set; }
 
-        public List<TeamMemberResponseDto> TeamMembers { get; set; } = new();
+        public bool IsActive { get; set; }
+        public string ImageUrl { get; set; }
     }
 
    

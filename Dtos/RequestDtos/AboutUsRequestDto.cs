@@ -11,6 +11,9 @@ namespace UserRoles.Dtos.RequestDtos
         public string Mission { get; set; }
 
         public string Story { get; set; }
+        public IFormFile ImageFile { get; set; }
+
+        public bool IsActive { get; set; }
 
     }
  

@@ -10,61 +10,43 @@ namespace UserRoles.Services
     public class AboutUsService : IAboutUsService
     {
         private readonly AppDbContext _context;
-
-        public AboutUsService(AppDbContext context)
+        private readonly IFileService _fileService;
+        public AboutUsService(AppDbContext context, IFileService fileService)
         {
             _context = context;
+            _fileService = fileService;
         }
 
 
         public async Task AddOrUpdateAboutUsAsync(AboutUsRequestDto viewModel)
         {
-            
             var aboutUs = viewModel.Id.HasValue
-               ? await _context.AboutUs
-                     .FirstOrDefaultAsync(a => a.Id == viewModel.Id)
-               : new AboutUs { Id = Guid.NewGuid()};
-
+                ? await _context.AboutUs.FirstOrDefaultAsync(a => a.Id == viewModel.Id)
+                : new AboutUs { Id = Guid.NewGuid() };
 
             if (aboutUs == null)
                 throw new Exception("AboutUs not found.");
+
+            if (viewModel.ImageFile != null && viewModel.ImageFile.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(aboutUs.ImageUrl))
+                {
+                    await _fileService.DeleteFileAsync(aboutUs.ImageUrl);
+                }
+                var imageUrl = await _fileService.SaveImageAsync(viewModel.ImageFile, "about-images");
+                aboutUs.ImageUrl = imageUrl;
+            }
 
             aboutUs.Title = viewModel.Title;
             aboutUs.Mission = viewModel.Mission;
             aboutUs.Story = viewModel.Story;
 
-          
             if (!viewModel.Id.HasValue)
                 _context.AboutUs.Add(aboutUs);
 
+
             await _context.SaveChangesAsync();
         }
-
-        //public async Task<AboutUsResponseDto> GetAboutUsForEditAsync()
-        //{
-        //    var aboutUs = await _context.AboutUs
-        //        .Include(a => a.TeamMembers)
-        //        .FirstOrDefaultAsync();
-
-        //    if (aboutUs == null)
-        //        return new AboutUsResponseDto(); 
-
-        //    return new AboutUsResponseDto
-        //    {
-        //        Id = aboutUs.Id,
-        //        Title = aboutUs.Title,
-        //        Mission = aboutUs.Mission,
-        //        Story = aboutUs.Story,
-        //        TeamMembers = aboutUs.TeamMembers.Select(tm => new TeamMemberResponseDto
-        //        {
-        //            Id = tm.Id,
-        //            Name = tm.Name,
-        //            Role = tm.Role,
-        //            PhotoUrl = tm.PhotoUrl,
-        //            Bio = tm.Bio
-        //        }).ToList()
-        //    };
-        //}
 
 
     }

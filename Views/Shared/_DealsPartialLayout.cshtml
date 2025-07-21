@@ -4,269 +4,120 @@
 }
 
 <style>
-/*     body {
-        margin: 0;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        line-height: 1.6;
-        color: #333;
-    }
 
-    header {
-        background: url('banner.jpg') center/cover no-repeat;
-        height: 300px;
+    .scroll-x {
         display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-    }
-
-        header button {
-            background: orange;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-        } */
-
-    .section {
-        padding: 40px 20px;
-        max-width: 1200px;
-        margin: auto;
-    }
-
-    .intro {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 30px;
-    }
-
-    .intro-text {
-        flex: 1;
-        min-width: 280px;
-    }
-
-        .intro-text h2 {
-            margin-top: 0;
-        }
-
-        .intro-text button {
-            background: orange;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            margin-right: 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-    .intro img {
-        flex: 1;
-        min-width: 280px;
-        max-width: 400px;
-        border-radius: 10px;
-    }
-
-    .promo-section {
-        background: #5c432d;
-        color: white;
-        padding: 40px 20px;
-    }
-
-        .promo-section h2 {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-    .promos {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        justify-content: center;
+        gap: 1rem;
+        overflow-x: auto;
     }
 
     .promo-card {
-        background: white;
-        color: #333;
-        border-radius: 10px;
+        flex: 0 0 300px; /* Width of each card */
+        display: flex;
+        flex-direction: column;
+        min-height: 400px; /* Ensures uniform height */
+        border-radius: 8px;
         overflow: hidden;
-        max-width: 300px;
-        flex: 1;
-        min-width: 250px;
     }
 
-        .promo-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-    .promo-card-content {
-        padding: 20px;
+    .promo-image {
+        height: 200px;
+        object-fit: cover;
+        opacity: 0.5;
     }
 
-        .promo-card-content h3 {
-            margin-top: 0;
-        }
-
-        .promo-card-content ul {
-            padding-left: 20px;
-        }
-
-        .promo-card-content button {
-            background: orange;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-
-    .services {
-        text-align: center;
-        padding: 40px 20px;
-    }
-
-    .services-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 20px;
-        margin-top: 30px;
-    }
-
-    .service-card img {
+    .promo-overlay {
+        position: absolute;
+        bottom: 0;
         width: 100%;
-        border-radius: 5px;
+        /* background: rgba(0, 0, 0, 0.6); */
+        color: #fff;
+        padding: 10px;
     }
 
-    .service-card h4 {
-        margin: 10px 0 5px 0;
+    .promo-card .p-3 {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
+
+
+
+    .scroll-x {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+ .cap{
+        background-color: rgb(80, 65, 40);
+ }
+
 </style>
 
 
-<section class="section intro">
-    <div class="intro-text">
-        <h2>Travel made easy</h2>
-        <p>
-            Write a paragraph that talks about your company here. You can talk about your company’s background, history, mission, vision, or philosophy. Anything that will introduce your brand’s persona to your clients.
-        </p>
-        <button>Latest Promos</button>
-        <button>Our Offerings</button>
-    </div>
-    <img src="travel.jpg" alt="Travel Image">
-</section>
 
-<section class="promo-section">
-    <h2>Summer Deals Promo</h2>
-    <div class="promos">
-        @if (promos != null && promos.Any())
-        {
-            foreach (var promo in promos)
+<section class="cap text-white py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Summer Deals Promo</h2>
+        <div class="scroll-x pb-3">
+            @if (promos != null && promos.Any())
             {
-                <div class="promo-card">
-                    <img src="@promo.ImageUrl" alt="@promo.Caption">
-                    <div class="promo-card-content">
-                        <h3>@promo.Caption</h3>
-                        <p>Starts at @promo.Amount</p>
-                        <ul>
-                            @if (promo.Features != null)
+                foreach (var promo in promos)
+                {
+                    <div class="promo-card bg-white text-dark shadow">
+                        <div class="position-relative">
+                            <img src="@promo.ImageUrl" class="w-100 promo-image" alt="@promo.Caption" />
+                            <div class="promo-overlay">
+                                <h5 class="mb-0">@promo.Caption</h5>
+                                <small>Starts at @promo.Amount</small>
+                            </div>
+                        </div>
+                        <div class="p-3">
+                            @if (promo.Features != null && promo.Features.Any())
                             {
-                                foreach (var feature in promo.Features)
-                                {
-                                    <li>@feature</li>
-                                }
+                                <ul class="mb-2">
+                                    @foreach (var feature in promo.Features)
+                                    {
+                                        <li>@feature</li>
+                                    }
+                                </ul>
                             }
-                        </ul>
-                        <button>Book Now</button>
+                            <button class="btn btn-sm btn-warning w-100">Book Now</button>
+                        </div>
                     </div>
-                </div>
+                }
             }
-        }
-        else
-        {
-            <p>No promos available.</p>
-        }
+            else
+            {
+                <p>No promos available.</p>
+            }
+        </div>
     </div>
 </section>
 
-
-@* <section class="promo-section">
-    <h2>Summer Deals Promo</h2>
-    <div class="promos">
-        <div class="promo-card">
-            <img src="nature.jpg" alt="Nature Escape">
-            <div class="promo-card-content">
-                <h3>Nature Escape</h3>
-                <p>Starts at $999</p>
-                <ul>
-                    <li>Round trip airfare</li>
-                    <li>4D/3N Twin share room</li>
-                    <li>Half board meals</li>
-                    <li>Guided nature tour</li>
-                    <li>Welcome drink</li>
-                </ul>
-                <button>Book Now</button>
-            </div>
+<section class="container py-5 text-center">
+    <h2 class="mb-4">We'll handle your trip for you</h2>
+    <div class="row g-4">
+        <div class="col-6 col-md-3">
+            <img src="flight.jpg" class="img-fluid rounded" alt="Flight Booking">
+            <h5 class="mt-2">Flight Booking</h5>
+            <p class="small">Share your service offerings here.</p>
         </div>
-        <div class="promo-card">
-            <img src="romantic.jpg" alt="Romantic Getaway">
-            <div class="promo-card-content">
-                <h3>Romantic Getaway</h3>
-                <p>Starts at $1500</p>
-                <ul>
-                    <li>Round trip airfare</li>
-                    <li>4D/3N Twin share room</li>
-                    <li>Full board meals</li>
-                    <li>Spa & massage session</li>
-                    <li>Couples meditation</li>
-                </ul>
-                <button>Book Now</button>
-            </div>
+        <div class="col-6 col-md-3">
+            <img src="tours.jpg" class="img-fluid rounded" alt="Tours & Activities">
+            <h5 class="mt-2">Tours & Activities</h5>
+            <p class="small">Share your service offerings here.</p>
         </div>
-        <div class="promo-card">
-            <img src="family.jpg" alt="Family Vacation">
-            <div class="promo-card-content">
-                <h3>Family Vacation</h3>
-                <p>Starts at $3000</p>
-                <ul>
-                    <li>Round trip airfare</li>
-                    <li>4D/3N Family suite</li>
-                    <li>Full board meals</li>
-                    <li>Guided nature tour</li>
-                    <li>Choice group activity</li>
-                </ul>
-                <button>Book Now</button>
-            </div>
+        <div class="col-6 col-md-3">
+            <img src="transfer.jpg" class="img-fluid rounded" alt="Airport Transfers">
+            <h5 class="mt-2">Airport Transfers</h5>
+            <p class="small">Share your service offerings here.</p>
         </div>
-    </div>
-</section> *@
-
-<section class="services">
-    <h2>We'll handle your trip for you</h2>
-    <div class="services-grid">
-        <div class="service-card">
-            <img src="flight.jpg" alt="Flight Booking">
-            <h4>Flight Booking</h4>
-            <p>Share your service offerings here.</p>
-        </div>
-        <div class="service-card">
-            <img src="tours.jpg" alt="Tours & Activities">
-            <h4>Tours & Activities</h4>
-            <p>Share your service offerings here.</p>
-        </div>
-        <div class="service-card">
-            <img src="transfer.jpg" alt="Airport Transfers">
-            <h4>Airport Transfers</h4>
-            <p>Share your service offerings here.</p>
-        </div>
-        <div class="service-card">
-            <img src="hotel.jpg" alt="Hotel Bookings">
-            <h4>Hotel Bookings</h4>
-            <p>Share your service offerings here.</p>
+        <div class="col-6 col-md-3">
+            <img src="hotel.jpg" class="img-fluid rounded" alt="Hotel Bookings">
+            <h5 class="mt-2">Hotel Bookings</h5>
+            <p class="small">Share your service offerings here.</p>
         </div>
     </div>
 </section>
