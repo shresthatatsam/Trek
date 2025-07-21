@@ -13,11 +13,13 @@ namespace UserRoles.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ICarousalService _carousalService;
         private readonly IDealService _dealService;
-        public HomeController(ILogger<HomeController> logger, ICarousalService carousalService, IDealService dealService)
+        private readonly IAboutUsService _aboutUsService;
+        public HomeController(ILogger<HomeController> logger, ICarousalService carousalService, IDealService dealService, IAboutUsService aboutUsService)
         {
             _logger = logger;
             _carousalService = carousalService;
             _dealService = dealService;
+            _aboutUsService = aboutUsService;
         }
 
 
@@ -30,6 +32,8 @@ namespace UserRoles.Controllers
             ViewBag.CarouselImages = carouselImages;
             var deals = await _dealService.List(); // List<DealResponseDto>
             ViewBag.PromoDeals = deals;
+
+            ViewBag.aboutUs = await _aboutUsService.List();
             return View();
         }
 

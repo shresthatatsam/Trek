@@ -7,6 +7,8 @@ namespace UserRoles.Services.Interface
     public interface IAboutUsService
     {
         Task AddOrUpdateAboutUsAsync(AboutUsRequestDto viewModel);
+        Task<AboutUsResponseDto> List();
+        Task<AboutUsResponseDto?> GetById(Guid id);
         //Task<AboutUsResponseDto> GetAboutUsForEditAsync();
     }
 }

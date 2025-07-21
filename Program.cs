@@ -4,6 +4,7 @@ using UserRoles.Data;
 using UserRoles.Models;
 using UserRoles.Services;
 using UserRoles.Services.Interface;
+using UserRoles.Services.Seeder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,14 @@ builder.Services.AddScoped<IDealService, DealService>();
 var app = builder.Build();
 
 await SeedService.SeedDatabase(app.Services);
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<AppDbContext>();
+
+    DbSeeder.SeedAboutUs(context);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

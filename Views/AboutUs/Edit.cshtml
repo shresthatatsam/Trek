@@ -1,7 +1,7 @@
-﻿@model UserRoles.Dtos.RequestDtos.AboutUsRequestDto
+﻿@model UserRoles.Dtos.ResponseDtos.AboutUsResponseDto
 
 @{
-    ViewData["Title"] = "Create About Us";
+    ViewData["Title"] = Model.Id == null ? "Create About Us" : "Edit About Us";
 }
 
 <div class="container mt-5">
@@ -11,6 +11,11 @@
         </div>
         <div class="card-body p-4">
             <form asp-action="Create" asp-controller="AboutUs" method="post" enctype="multipart/form-data">
+                @if (Model.Id != null)
+                {
+                    <input type="hidden" asp-for="Id" />
+                }
+
                 <div class="mb-3">
                     <label asp-for="Title" class="form-label fw-semibold">Title</label>
                     <input asp-for="Title" class="form-control" placeholder="Enter title" />
@@ -30,13 +35,17 @@
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="ImageFile" class="form-label fw-semibold">Image</label>
-                    <input asp-for="ImageFile" type="file" class="form-control" />
-                    <span asp-validation-for="ImageFile" class="text-danger small"></span>
+                    <label class="form-label">Current Image</label><br />
+                    <img src="@Model.ImageUrl" alt="carousel image" width="200" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="ImageFile" class="form-label">Replace Image</label>
+                    <input type="file" name="ImageFile" id="ImageFile" class="form-control" accept="image/*" />
                 </div>
 
                 <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-success px-4 py-2 rounded-pill">Save</button>
+                    <button type="submit" class="btn btn-success w-100 py-2 rounded-pill">Save</button>
                 </div>
             </form>
         </div>
@@ -44,8 +53,5 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }
-

@@ -1,43 +1,46 @@
-﻿@* @using UserRoles.Dtos.ResponseDtos;
+﻿@model UserRoles.Dtos.ResponseDtos.AboutUsResponseDto
+
 @{
-    var carouselImages = ViewBag.CarouselImages as List<CarousalImageResponseDto>;
+    ViewData["Title"] = "About Us";
 }
 
+<h2>Carousel Images</h2>
 
-@await Html.PartialAsync("_Navbar")
-@await Html.PartialAsync("_Carousel", carouselImages)  *@
 
-@model AboutUs
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
 
-<h2>@Model.Title</h2>
-<p><strong>Mission:</strong> @Model.Mission</p>
-<p><strong>Story:</strong> @Model.Story</p>
-
-<h3>Team Members</h3>
-@* <ul>
-    @foreach (var member in Model.TeamMembers)
-    {
-        <li>
-            <img src="@member.PhotoUrl" alt="@member.Name" width="50" />
-            <strong>@member.Name</strong> - @member.Role
-            <p>@member.Bio</p>
-
-            <form asp-action="DeleteTeamMember" method="post">
-                <input type="hidden" name="id" value="@member.Id" />
-                <button type="submit">Delete</button>
-            </form>
-        </li>
-    }
-</ul> *@
-
-<h4>Add Team Member</h4>
-<form asp-action="AddTeamMember" method="post">
-    <input type="hidden" name="AboutUsSectionId" value="@Model.Id" />
-    <input name="Name" placeholder="Name" />
-    <input name="Role" placeholder="Role" />
-    <input name="PhotoUrl" placeholder="Photo URL" />
-    <textarea name="Bio" placeholder="Bio"></textarea>
-    <button type="submit">Add</button>
-</form>
-
-<a asp-action="Edit">Edit About Us</a>
+<!-- Table of Carousals -->
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Image</th>
+            <th>Story</th>
+            <th>Title</th>
+            <th>Mission</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+       
+            <tr>
+                <td><img src="@Model.ImageUrl" alt="carousel image" width="120" /></td>
+            <td>@Model.Story</td>
+            <td>@Model.Title</td>
+            <td>@Model.Mission</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                        @* <button type="submit" class="btn btn-sm btn-danger">Delete</button> *@
+                    </form>
+                </td>
+            </tr>
+        
+    </tbody>
+</table>

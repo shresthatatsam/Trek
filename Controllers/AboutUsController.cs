@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UserRoles.Dtos.RequestDtos;
 using UserRoles.Models;
+using UserRoles.Services;
 using UserRoles.Services.Interface;
 
 namespace UserRoles.Controllers
@@ -8,21 +9,17 @@ namespace UserRoles.Controllers
     public class AboutUsController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ICarousalService _carousalService;
         private readonly IAboutUsService _service;
-        public AboutUsController(ILogger<HomeController> logger, ICarousalService carousalService, IAboutUsService service)
+        public AboutUsController(ILogger<HomeController> logger, IAboutUsService service)
         {
             _logger = logger;
-            _carousalService = carousalService;
             _service = service;
         }
 
         public async Task<IActionResult> Index()
         {
-            //var carouselImages = await _carousalService.List(CarousalEnum.Content);
-            //var aboutUs = await _service.GetAboutUsAsync();
-            //ViewBag.CarouselImages = carouselImages;
-            return View();
+            var aboutUs = await _service.List();
+            return View(aboutUs);
         }
 
 
@@ -44,20 +41,16 @@ namespace UserRoles.Controllers
             return View(model);
         }
 
-      
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(AboutUsRequestDto model)
+
+        public async Task<IActionResult> Edit(Guid id)
         {
-            if (ModelState.IsValid)
-            {
-                //await _service.AddOrUpdateAboutUsAsync(model);
-                return RedirectToAction("Index");
-            }
-            return View(model);
-        }
+            var aboutUs = await _service.GetById(id);
+            if (aboutUs == null)
+                return NotFound();
 
+            return View(aboutUs);
+        }
 
 
     }

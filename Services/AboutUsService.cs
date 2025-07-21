@@ -27,6 +27,13 @@ namespace UserRoles.Services
             if (aboutUs == null)
                 throw new Exception("AboutUs not found.");
 
+
+            var allAboutUs = await _context.AboutUs.Where(a => a.Id != aboutUs.Id).ToListAsync();
+            foreach (var entry in allAboutUs)
+            {
+                entry.IsActive = false;
+            }
+
             if (viewModel.ImageFile != null && viewModel.ImageFile.Length > 0)
             {
                 if (!string.IsNullOrEmpty(aboutUs.ImageUrl))
@@ -40,7 +47,7 @@ namespace UserRoles.Services
             aboutUs.Title = viewModel.Title;
             aboutUs.Mission = viewModel.Mission;
             aboutUs.Story = viewModel.Story;
-
+            aboutUs.IsActive = viewModel.IsActive;
             if (!viewModel.Id.HasValue)
                 _context.AboutUs.Add(aboutUs);
 
@@ -48,6 +55,35 @@ namespace UserRoles.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task<AboutUsResponseDto> List()
+        {
+            var data = await _context.AboutUs.Where(x => x.IsActive).AsNoTracking().Select(x => new AboutUsResponseDto
+            {
+                Id = x.Id,
+                ImageUrl = x.ImageUrl,
+                Story= x.Story,
+                Title = x.Title,
+                Mission = x.Mission,
 
+            }).FirstOrDefaultAsync();
+
+            return data;
+        }
+
+
+        public async Task<AboutUsResponseDto?> GetById(Guid id)
+        {
+            return await _context.AboutUs
+                .Where(x => x.Id == id)
+                .Select(x => new AboutUsResponseDto
+                {
+                    Id = x.Id,
+                    ImageUrl = x.ImageUrl,
+                    Story = x.Story,
+                    Title = x.Title,
+                    Mission = x.Mission
+                })
+                .FirstOrDefaultAsync();
+        }
     }
 }
