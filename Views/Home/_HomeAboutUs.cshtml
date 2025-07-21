@@ -35,28 +35,6 @@
 </head>
 <body>
 
-  @*   <section class="about-section header-section py-5">
-        <div class="container">
-            <div class="row align-items-center">
-                <!-- Text Content -->
-                <div class="col-md-6 mb-4 text-center text-md-start">
-                    <h2>Travel made easy</h2>
-                    <p class="mx-auto mx-md-0">
-                        Write a paragraph that talks about your company here. You can talk about your company’s background, history, mission, vision, or philosophy. Anything that will introduce your brand’s persona to your clients.
-                    </p>
-                    <div class="d-flex flex-column flex-sm-row justify-content-center justify-content-md-start gap-2 mt-3">
-                        <button class="btn btn-warning">Latest Promos</button>
-                        <button class="btn btn-warning">Our Offerings</button>
-                    </div>
-                </div>
-
-                <!-- Image -->
-                <div class="col-md-6 text-center">
-                    <img src="travel.jpg" class="img-fluid rounded" alt="Travel Image">
-                </div>
-            </div>
-        </div>
-    </section> *@
 
 
     <section class="about-section header-section py-5">
@@ -65,7 +43,7 @@
                 <!-- Text Content -->
                 <div class="col-md-6 mb-4 text-center text-md-start">
                     <h2>@Model.Title</h2>
-                    <p class="mx-auto mx-md-0">
+                    <p class="mx-auto mx-md-0 ml-5">
                         @Model.Story
                     </p>
                     <div class="d-flex flex-column flex-sm-row justify-content-center justify-content-md-start gap-2 mt-3">
@@ -76,7 +54,7 @@
 
                 <!-- Image -->
                 <div class="col-md-6 text-center">
-                    <img src="~/images/@Model.ImageUrl" class="img-fluid rounded" alt="Travel Image">
+                    <img src="@Model.ImageUrl" class="img-fluid rounded" alt="Travel Image">
                 </div>
             </div>
         </div>
