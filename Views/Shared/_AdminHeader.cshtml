@@ -173,6 +173,19 @@
         </div>
     </div>
 
+
+    <div class="dropdown">
+        <a class="dropdown-toggle @(currentPath.StartsWith("/PageContent") ? "active" : "")" data-bs-toggle="collapse" href="#PageContentMenu" role="button" aria-expanded="false" aria-controls="PageContentMenu">
+            PageContent
+        </a>
+        <div class="collapse @(currentPath.StartsWith("/PageContent") ? "show" : "")" id="PageContentMenu">
+            <ul class="list-unstyled ps-3">
+                <li><a class="@(currentPath == "/PageContent/Create" ? "active" : "")" asp-controller="PageContent" asp-action="Create">Create PageContent</a></li>
+                <li><a class="@(currentPath == "/PageContent/Index" ? "active" : "")" asp-controller="PageContent" asp-action="Index">List PageContent</a></li>
+            </ul>
+        </div>
+    </div>
+
     <hr />
 
     @if (signInManager.IsSignedIn(User))
