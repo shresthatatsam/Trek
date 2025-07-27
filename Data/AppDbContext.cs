@@ -24,7 +24,13 @@ namespace UserRoles.Data
 
 
             base.OnModelCreating(modelBuilder);
-           
+
+            //modelBuilder.Entity<GuideBooking>()
+            //.HasOne(gb => gb.Guide)
+            //.WithMany(g => g.Bookings)
+            //.HasForeignKey(gb => gb.GuideId);
+
+
             modelBuilder.ApplyConfiguration(new CarousalImageConfiguration());
         }
 
