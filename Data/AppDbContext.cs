@@ -16,8 +16,9 @@ namespace UserRoles.Data
         public DbSet<AboutUs> AboutUs { get; set; }
         public DbSet<TeamMember> TeamMembers { get; set; }
         public DbSet<PageContent> PageContents { get; set; }
+        public DbSet<NabBarContent> NavBarContents { get; set; }
+        public DbSet<NavItem> NavItems { get; set; }
 
-        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,6 +30,12 @@ namespace UserRoles.Data
             //.HasOne(gb => gb.Guide)
             //.WithMany(g => g.Bookings)
             //.HasForeignKey(gb => gb.GuideId);
+
+            modelBuilder.Entity<NabBarContent>()
+                  .HasMany(n => n.Items)
+                  .WithOne(i => i.NavBarContent)
+                  .HasForeignKey(i => i.NavBarContentId)
+                  .OnDelete(DeleteBehavior.Cascade);
 
 
             modelBuilder.ApplyConfiguration(new CarousalImageConfiguration());

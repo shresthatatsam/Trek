@@ -186,6 +186,18 @@
         </div>
     </div>
 
+    <div class="dropdown">
+        <a class="dropdown-toggle @(currentPath.StartsWith("/NabBarContent") ? "active" : "")" data-bs-toggle="collapse" href="#NabBarContentMenu" role="button" aria-expanded="false" aria-controls="NabBarContentMenu">
+            PageContent
+        </a>
+        <div class="collapse @(currentPath.StartsWith("/NabBarContent") ? "show" : "")" id="NabBarContentMenu">
+            <ul class="list-unstyled ps-3">
+                <li><a class="@(currentPath == "/NabBarContent/Create" ? "active" : "")" asp-controller="NabBarContent" asp-action="Create">Create Nav Content</a></li>
+                <li><a class="@(currentPath == "/NabBarContent/Index" ? "active" : "")" asp-controller="NabBarContent" asp-action="Index">List PageContent</a></li>
+            </ul>
+        </div>
+    </div>
+
     <hr />
 
     @if (signInManager.IsSignedIn(User))
