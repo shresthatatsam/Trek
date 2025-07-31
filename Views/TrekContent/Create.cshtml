@@ -1,0 +1,161 @@
+﻿@model UserRoles.Models.Trek.TrekPackage
+
+@{
+    ViewBag.Title = "Create Trek Package";
+}
+
+<h2>Create Trek Package</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label asp-for="Title"></label>
+        <input asp-for="Title" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Slug"></label>
+        <input asp-for="Slug" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ShortDescription"></label>
+        <textarea asp-for="ShortDescription" class="form-control"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Duration"></label>
+        <input asp-for="Duration" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Difficulty"></label>
+        <input asp-for="Difficulty" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MaxAltitude"></label>
+        <input asp-for="MaxAltitude" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="TrekkingDistance"></label>
+        <input asp-for="TrekkingDistance" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="StartEndPoint"></label>
+        <input asp-for="StartEndPoint" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="BestSeason"></label>
+        <input asp-for="BestSeason" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="FeaturedImageUrl">Featured Image URL</label>
+        <input asp-for="FeaturedImageUrl" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MapImageUrl">Map Image URL</label>
+        <input asp-for="MapImageUrl" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="IsFeatured"></label>
+        <input asp-for="IsFeatured" type="checkbox" />
+    </div>
+
+    <h4>Overview</h4>
+    <div class="form-group">
+        <label>Summary</label>
+        <textarea name="Overview.Summary" class="form-control"></textarea>
+    </div>
+
+    <h4>Itinerary</h4>
+    @for (int i = 0; i < 3; i++)
+    {
+            <div class="form-group">
+                <label>Day Title</label>
+                <input name="Itinerary.Days[@i].Title" class="form-control" />
+                <label>Day Description</label>
+                <textarea name="Itinerary.Days[@i].Description" class="form-control"></textarea>
+            </div>
+    }
+
+    <h4>Cost Info</h4>
+    <div class="form-group">
+        <label>Cost Summary</label>
+        <textarea name="CostInfo.Summary" class="form-control"></textarea>
+    </div>
+
+    @for (int i = 0; i < 2; i++)
+    {
+            <div class="form-group">
+                <label>Breakdown Title</label>
+                <input name="CostInfo.Breakdown[@i].Title" class="form-control" />
+                <label>Amount</label>
+                <input name="CostInfo.Breakdown[@i].Amount" type="number" class="form-control" />
+            </div>
+    }
+
+    <h4>FAQs</h4>
+    @for (int i = 0; i < 2; i++)
+    {
+            <div class="form-group">
+                <label>Question</label>
+                <input name="FAQs[@i].Question" class="form-control" />
+                <label>Answer</label>
+                <textarea name="FAQs[@i].Answer" class="form-control"></textarea>
+            </div>
+    }
+
+    <h4>Highlights</h4>
+    @for (int i = 0; i < 3; i++)
+    {
+            <div class="form-group">
+                <input name="Highlights[@i].Point" class="form-control" placeholder="Highlight" />
+            </div>
+    }
+
+    <h4>Inclusions</h4>
+    @for (int i = 0; i < 3; i++)
+    {
+            <div class="form-group">
+                <input name="Includes[@i].Description" class="form-control" placeholder="Inclusion" />
+            </div>
+    }
+
+    <h4>Exclusions</h4>
+    @for (int i = 0; i < 3; i++)
+    {
+            <div class="form-group">
+                <input name="Excludes[@i].Description" class="form-control" placeholder="Exclusion" />
+            </div>
+    }
+
+    <h4>Reviews</h4>
+    @for (int i = 0; i < 2; i++)
+    {
+            <div class="form-group">
+                <label>Reviewer</label>
+                <input name="Reviews[@i].ReviewerName" class="form-control" />
+                <label>Comment</label>
+                <textarea name="Reviews[@i].Comment" class="form-control"></textarea>
+                <label>Rating</label>
+                <input name="Reviews[@i].Rating" type="number" class="form-control" min="1" max="5" />
+            </div>
+    }
+
+    <h4>Gallery Images</h4>
+    @for (int i = 0; i < 3; i++)
+    {
+            <div class="form-group">
+                <label>Image URL</label>
+                <input name="GalleryImages[@i].ImageUrl" class="form-control" />
+            </div>
+    }
+
+    <button type="submit" class="btn btn-primary">Save Trek Package</button>
+</form>

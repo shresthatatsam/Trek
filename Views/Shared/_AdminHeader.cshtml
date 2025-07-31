@@ -198,6 +198,19 @@
         </div>
     </div>
 
+
+      <div class="dropdown">
+        <a class="dropdown-toggle @(currentPath.StartsWith("/TrekContent") ? "active" : "")" data-bs-toggle="collapse" href="#TrekContentMenu" role="button" aria-expanded="false" aria-controls="TrekContentMenu">
+            PageContent
+        </a>
+        <div class="collapse @(currentPath.StartsWith("/TrekContent") ? "show" : "")" id="TrekContentMenu">
+            <ul class="list-unstyled ps-3">
+                <li><a class="@(currentPath == "/TrekContent/Create" ? "active" : "")" asp-controller="TrekContent" asp-action="Create">Treks Content</a></li>
+                <li><a class="@(currentPath == "/TrekContent/Index" ? "active" : "")" asp-controller="TrekContent" asp-action="Index">List PageContent</a></li>
+            </ul>
+        </div>
+    </div>
+
     <hr />
 
     @if (signInManager.IsSignedIn(User))
