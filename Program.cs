@@ -33,6 +33,7 @@ builder.Services.AddScoped<IAboutUsService, AboutUsService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IDealService, DealService>();
 builder.Services.AddScoped<IPageContentService, PageContentService>();
+builder.Services.AddScoped<ITrekContentService, TrekContentService>();
 
 var app = builder.Build();
 

@@ -12,8 +12,8 @@ using UserRoles.Data;
 namespace UserRoles.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250731164019_trip content")]
-    partial class tripcontent
+    [Migration("20250803170626_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -392,16 +392,26 @@ namespace UserRoles.Migrations
 
             modelBuilder.Entity("UserRoles.Models.Trek.TrekCostInfo", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
 
-                    b.Property<decimal>("Price")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("BasePrice")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
+                        .HasDefaultValue("USD");
 
                     b.Property<string>("PriceNote")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("TrekPackageId")
                         .HasColumnType("int");
@@ -414,19 +424,151 @@ namespace UserRoles.Migrations
                     b.ToTable("TrekCostInfos");
                 });
 
+            modelBuilder.Entity("UserRoles.Models.Trek.TrekDeparture", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AvailableSpots")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Available");
+
+                    b.Property<int>("TrekPackageId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TrekPackageId", "StartDate")
+                        .HasDatabaseName("IX_TrekDeparture_TrekPackageId_StartDate");
+
+                    b.ToTable("TrekDepartures", t =>
+                        {
+                            t.HasCheckConstraint("CK_TrekDeparture_AvailableSpots", "[AvailableSpots] >= 0");
+                        });
+                });
+
+            modelBuilder.Entity("UserRoles.Models.Trek.TrekDifficulty", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TrekDifficulties");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Color = "#28a745",
+                            Description = "Suitable for beginners",
+                            Level = 1,
+                            Name = "Easy"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Color = "#ffc107",
+                            Description = "Requires some fitness",
+                            Level = 2,
+                            Name = "Moderate"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Color = "#fd7e14",
+                            Description = "Requires good fitness",
+                            Level = 3,
+                            Name = "Challenging"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Color = "#dc3545",
+                            Description = "Requires excellent fitness",
+                            Level = 4,
+                            Name = "Strenuous"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Color = "#6f42c1",
+                            Description = "Only for experienced trekkers",
+                            Level = 5,
+                            Name = "Extreme"
+                        });
+                });
+
             modelBuilder.Entity("UserRoles.Models.Trek.TrekFAQ", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Answer")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("Question")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("SortOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<int>("TrekPackageId")
                         .HasColumnType("int");
@@ -440,21 +582,36 @@ namespace UserRoles.Migrations
 
             modelBuilder.Entity("UserRoles.Models.Trek.TrekGalleryImage", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AltText")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Caption")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsFeatured")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("SortOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<int>("TrekPackageId")
                         .HasColumnType("int");
@@ -468,21 +625,31 @@ namespace UserRoles.Migrations
 
             modelBuilder.Entity("UserRoles.Models.Trek.TrekHighlight", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("IconClass")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("SortOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("TrekPackageId")
                         .HasColumnType("int");
@@ -496,25 +663,42 @@ namespace UserRoles.Migrations
 
             modelBuilder.Entity("UserRoles.Models.Trek.TrekInclusion", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<bool>("IsIncluded")
                         .HasColumnType("bit");
 
                     b.Property<string>("Item")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("SortOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<int>("TrekPackageId")
                         .HasColumnType("int");
 
                     b.Property<int?>("TrekPackageId1")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TrekPackageId2")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -523,14 +707,18 @@ namespace UserRoles.Migrations
 
                     b.HasIndex("TrekPackageId1");
 
+                    b.HasIndex("TrekPackageId2");
+
                     b.ToTable("TrekInclusions");
                 });
 
             modelBuilder.Entity("UserRoles.Models.Trek.TrekItinerary", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("TrekPackageId")
                         .HasColumnType("int");
@@ -545,17 +733,26 @@ namespace UserRoles.Migrations
 
             modelBuilder.Entity("UserRoles.Models.Trek.TrekItineraryDay", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Accommodation")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Activities")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Altitude")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("DayNumber")
                         .HasColumnType("int");
@@ -566,40 +763,55 @@ namespace UserRoles.Migrations
 
                     b.Property<string>("Duration")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Meals")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Transportation")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("TrekItineraryId")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("TrekItineraryId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("TrekItineraryId1");
+                    b.HasIndex("TrekItineraryId");
 
                     b.ToTable("TrekItineraryDays");
                 });
 
             modelBuilder.Entity("UserRoles.Models.Trek.TrekOverview", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ImportantNote")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("KeyPoints")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShortItinerary")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -624,91 +836,223 @@ namespace UserRoles.Migrations
 
                     b.Property<string>("BestSeason")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Difficulty")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Duration")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("FeaturedImageUrl")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<bool>("IsFeatured")
                         .HasColumnType("bit");
 
                     b.Property<string>("MapImageUrl")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("MaxAltitude")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("ShortDescription")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Slug")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("StartEndPoint")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("TrekkingDistance")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("VideoUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_TrekPackage_CreatedAt");
+
+                    b.HasIndex("Difficulty")
+                        .HasDatabaseName("IX_TrekPackage_Difficulty");
+
+                    b.HasIndex("IsFeatured")
+                        .HasDatabaseName("IX_TrekPackage_IsFeatured");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
 
                     b.ToTable("TrekPackages");
                 });
 
             modelBuilder.Entity("UserRoles.Models.Trek.TrekPriceBreakdown", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
 
-                    b.Property<string>("Cost")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<bool>("Included")
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsIncluded")
                         .HasColumnType("bit");
 
                     b.Property<string>("Item")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("TrekCostInfoId")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("TrekCostInfoId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("TrekCostInfoId1");
+                    b.HasIndex("TrekCostInfoId");
 
                     b.ToTable("TrekPriceBreakdowns");
                 });
 
+            modelBuilder.Entity("UserRoles.Models.Trek.TrekPricing", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("GroupSize")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("PricePerPerson")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TrekCostInfoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TrekCostInfoId");
+
+                    b.ToTable("TrekPricings");
+                });
+
+            modelBuilder.Entity("UserRoles.Models.Trek.TrekRegion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TrekRegions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Home to the world's highest peak",
+                            Name = "Everest Region"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Popular trekking destination with diverse landscapes",
+                            Name = "Annapurna Region"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Close to Kathmandu with beautiful valleys",
+                            Name = "Langtang Region"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Off the beaten path trekking",
+                            Name = "Manaslu Region"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Description = "Ancient kingdom with unique culture",
+                            Name = "Mustang Region"
+                        });
+                });
+
             modelBuilder.Entity("UserRoles.Models.Trek.TrekReview", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsVerified")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
@@ -716,22 +1060,113 @@ namespace UserRoles.Migrations
                     b.Property<DateTime>("ReviewDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ReviewSource")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("ReviewText")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ReviewerCountry")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("ReviewerName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("TrekPackageId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TrekPackageId");
+                    b.HasIndex("TrekPackageId", "IsVerified")
+                        .HasDatabaseName("IX_TrekReview_TrekPackageId_IsVerified");
 
-                    b.ToTable("TrekReviews");
+                    b.ToTable("TrekReviews", t =>
+                        {
+                            t.HasCheckConstraint("CK_TrekReview_Rating", "[Rating] >= 1 AND [Rating] <= 5");
+                        });
+                });
+
+            modelBuilder.Entity("UserRoles.Models.Trek.TrekSeason", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsRecommended")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Months")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TemperatureRange")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("WeatherDescription")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TrekSeasons");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IsRecommended = true,
+                            Months = "March - May",
+                            Name = "Spring",
+                            TemperatureRange = "10°C to 25°C",
+                            WeatherDescription = "Clear skies, moderate temperatures"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            IsRecommended = false,
+                            Months = "June - August",
+                            Name = "Monsoon",
+                            TemperatureRange = "15°C to 30°C",
+                            WeatherDescription = "Heavy rainfall, cloudy"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            IsRecommended = true,
+                            Months = "September - November",
+                            Name = "Autumn",
+                            TemperatureRange = "5°C to 20°C",
+                            WeatherDescription = "Clear skies, perfect visibility"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            IsRecommended = false,
+                            Months = "December - February",
+                            Name = "Winter",
+                            TemperatureRange = "-10°C to 15°C",
+                            WeatherDescription = "Cold temperatures, clear skies"
+                        });
                 });
 
             modelBuilder.Entity("UserRoles.Models.Users", b =>
@@ -867,92 +1302,142 @@ namespace UserRoles.Migrations
 
             modelBuilder.Entity("UserRoles.Models.Trek.TrekCostInfo", b =>
                 {
-                    b.HasOne("UserRoles.Models.Trek.TrekPackage", null)
+                    b.HasOne("UserRoles.Models.Trek.TrekPackage", "TrekPackage")
                         .WithOne("CostInfo")
                         .HasForeignKey("UserRoles.Models.Trek.TrekCostInfo", "TrekPackageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("TrekPackage");
+                });
+
+            modelBuilder.Entity("UserRoles.Models.Trek.TrekDeparture", b =>
+                {
+                    b.HasOne("UserRoles.Models.Trek.TrekPackage", "TrekPackage")
+                        .WithMany("Departures")
+                        .HasForeignKey("TrekPackageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TrekPackage");
                 });
 
             modelBuilder.Entity("UserRoles.Models.Trek.TrekFAQ", b =>
                 {
-                    b.HasOne("UserRoles.Models.Trek.TrekPackage", null)
+                    b.HasOne("UserRoles.Models.Trek.TrekPackage", "TrekPackage")
                         .WithMany("FAQs")
                         .HasForeignKey("TrekPackageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("TrekPackage");
                 });
 
             modelBuilder.Entity("UserRoles.Models.Trek.TrekGalleryImage", b =>
                 {
-                    b.HasOne("UserRoles.Models.Trek.TrekPackage", null)
+                    b.HasOne("UserRoles.Models.Trek.TrekPackage", "TrekPackage")
                         .WithMany("GalleryImages")
                         .HasForeignKey("TrekPackageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("TrekPackage");
                 });
 
             modelBuilder.Entity("UserRoles.Models.Trek.TrekHighlight", b =>
                 {
-                    b.HasOne("UserRoles.Models.Trek.TrekPackage", null)
+                    b.HasOne("UserRoles.Models.Trek.TrekPackage", "TrekPackage")
                         .WithMany("Highlights")
                         .HasForeignKey("TrekPackageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("TrekPackage");
                 });
 
             modelBuilder.Entity("UserRoles.Models.Trek.TrekInclusion", b =>
                 {
-                    b.HasOne("UserRoles.Models.Trek.TrekPackage", null)
-                        .WithMany("Excludes")
+                    b.HasOne("UserRoles.Models.Trek.TrekPackage", "TrekPackage")
+                        .WithMany()
                         .HasForeignKey("TrekPackageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("UserRoles.Models.Trek.TrekPackage", null)
-                        .WithMany("Includes")
+                        .WithMany("Excludes")
                         .HasForeignKey("TrekPackageId1");
+
+                    b.HasOne("UserRoles.Models.Trek.TrekPackage", null)
+                        .WithMany("Includes")
+                        .HasForeignKey("TrekPackageId2");
+
+                    b.Navigation("TrekPackage");
                 });
 
             modelBuilder.Entity("UserRoles.Models.Trek.TrekItinerary", b =>
                 {
-                    b.HasOne("UserRoles.Models.Trek.TrekPackage", null)
+                    b.HasOne("UserRoles.Models.Trek.TrekPackage", "TrekPackage")
                         .WithOne("Itinerary")
                         .HasForeignKey("UserRoles.Models.Trek.TrekItinerary", "TrekPackageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("TrekPackage");
                 });
 
             modelBuilder.Entity("UserRoles.Models.Trek.TrekItineraryDay", b =>
                 {
-                    b.HasOne("UserRoles.Models.Trek.TrekItinerary", null)
+                    b.HasOne("UserRoles.Models.Trek.TrekItinerary", "TrekItinerary")
                         .WithMany("Days")
-                        .HasForeignKey("TrekItineraryId1");
+                        .HasForeignKey("TrekItineraryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TrekItinerary");
                 });
 
             modelBuilder.Entity("UserRoles.Models.Trek.TrekOverview", b =>
                 {
-                    b.HasOne("UserRoles.Models.Trek.TrekPackage", null)
+                    b.HasOne("UserRoles.Models.Trek.TrekPackage", "TrekPackage")
                         .WithOne("Overview")
                         .HasForeignKey("UserRoles.Models.Trek.TrekOverview", "TrekPackageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("TrekPackage");
                 });
 
             modelBuilder.Entity("UserRoles.Models.Trek.TrekPriceBreakdown", b =>
                 {
-                    b.HasOne("UserRoles.Models.Trek.TrekCostInfo", null)
+                    b.HasOne("UserRoles.Models.Trek.TrekCostInfo", "TrekCostInfo")
                         .WithMany("Breakdown")
-                        .HasForeignKey("TrekCostInfoId1");
+                        .HasForeignKey("TrekCostInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TrekCostInfo");
+                });
+
+            modelBuilder.Entity("UserRoles.Models.Trek.TrekPricing", b =>
+                {
+                    b.HasOne("UserRoles.Models.Trek.TrekCostInfo", "TrekCostInfo")
+                        .WithMany("GroupPricing")
+                        .HasForeignKey("TrekCostInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TrekCostInfo");
                 });
 
             modelBuilder.Entity("UserRoles.Models.Trek.TrekReview", b =>
                 {
-                    b.HasOne("UserRoles.Models.Trek.TrekPackage", null)
+                    b.HasOne("UserRoles.Models.Trek.TrekPackage", "TrekPackage")
                         .WithMany("Reviews")
                         .HasForeignKey("TrekPackageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("TrekPackage");
                 });
 
             modelBuilder.Entity("UserRoles.Models.NabBarContent", b =>
@@ -963,6 +1448,8 @@ namespace UserRoles.Migrations
             modelBuilder.Entity("UserRoles.Models.Trek.TrekCostInfo", b =>
                 {
                     b.Navigation("Breakdown");
+
+                    b.Navigation("GroupPricing");
                 });
 
             modelBuilder.Entity("UserRoles.Models.Trek.TrekItinerary", b =>
@@ -974,6 +1461,8 @@ namespace UserRoles.Migrations
                 {
                     b.Navigation("CostInfo")
                         .IsRequired();
+
+                    b.Navigation("Departures");
 
                     b.Navigation("Excludes");
 
