@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using UserRoles.Data;
 using UserRoles.Models.Trek;
 using UserRoles.Services.Interface;
 using UserRoles.ViewModels;
@@ -8,10 +10,12 @@ namespace UserRoles.Controllers
     public class TrekContentController : Controller
     {
         private readonly ITrekContentService _trekPackageService;
+        private readonly AppDbContext _context;
 
-        public TrekContentController(ITrekContentService trekPackageService)
+        public TrekContentController(ITrekContentService trekPackageService, AppDbContext context)
         {
             _trekPackageService = trekPackageService;
+            _context = context;
         }
 
         public async Task<IActionResult> Index()
@@ -20,16 +24,84 @@ namespace UserRoles.Controllers
             return View(trekPackages);
         }
 
-        [Route("trip/{slug}")]
-        public async Task<IActionResult> Details(string slug)
+
+        // Option 1: Direct implementation
+        public async Task<IActionResult> displayview()
         {
-            var viewModel = await _trekPackageService.GetTrekPackageDisplayViewModelAsync(slug);
-            if (viewModel == null)
+            int id = 1004;
+            var displayModel = await GetTrekPackageDisplayViewModel(id);
+
+            if (displayModel == null)
             {
                 return NotFound();
             }
-            return View("TrekDetails", viewModel);
+
+            return View(displayModel);
         }
+
+        [HttpGet("details")]
+        public async Task<IActionResult> Details(int id)
+        {
+            var displayModel = await GetTrekPackageDisplayViewModel(id);
+
+            if (displayModel == null)
+            {
+                return NotFound();
+            }
+
+            return View(displayModel);
+        }
+
+        // Private helper method to avoid code duplication
+        private async Task<TrekPackageDisplayViewModel> GetTrekPackageDisplayViewModel(int id)
+        
+        {
+            var trekPackage = await _context.TrekPackages
+                .Include(tp => tp.FAQs)
+                .Include(tp => tp.Includes)
+                .Include(tp => tp.Excludes)
+                .Include(tp => tp.Reviews)
+                .Include(tp => tp.Departures)
+                .FirstOrDefaultAsync(tp => tp.Id == id);
+
+            if (trekPackage == null)
+            {
+                return null;
+            }
+
+            var faqsByCategory = trekPackage.FAQs
+                .GroupBy(f => f.Category)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            var includesByCategory = trekPackage.Includes
+                .GroupBy(i => i.Category)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            var excludesByCategory = trekPackage.Excludes
+                .GroupBy(e => e.Category)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            var latestReviews = trekPackage.Reviews
+                .Take(5)
+                .ToList();
+
+            return new TrekPackageDisplayViewModel
+            {
+                TrekPackage = trekPackage,
+                FAQsByCategory = faqsByCategory,
+                IncludesByCategory = includesByCategory,
+                ExcludesByCategory = excludesByCategory,
+                LatestReviews = latestReviews,
+                AverageRating = trekPackage.Reviews.Any() ? trekPackage.Reviews.Average(r => r.Rating) : 0,
+                TotalReviews = trekPackage.Reviews.Count,
+                AvailableDepartures = trekPackage.Departures
+                    .Where(d => d.Status == "Available")
+                    .OrderBy(d => d.StartDate)
+                    .ToList()
+            };
+        }
+
+
 
         [Route("featured-treks")]
         public async Task<IActionResult> Featured()
@@ -88,7 +160,7 @@ namespace UserRoles.Controllers
                     await _trekPackageService.CreateTrekPackageAsync(trekPackage);
 
                     TempData["Success"] = "Trek package created successfully!";
-                    return RedirectToAction("AdminIndex");
+                    return RedirectToAction("displayview" ,trekPackage.Id);
                 }
                 catch (Exception ex)
                 {
@@ -98,137 +170,8 @@ namespace UserRoles.Controllers
             return View("Create", viewModel);
         }
 
-        [Route("admin/treks/edit/{id}")]
-        public async Task<IActionResult> Edit(int id)
-        {
-            var trekPackage = await _trekPackageService.GetTrekPackageByIdAsync(id);
-            if (trekPackage == null)
-            {
-                return NotFound();
-            }
-
-            var viewModel = MapEntityToViewModel(trekPackage);
-            return View("Admin/Edit", viewModel);
-        }
-
-        [HttpPost]
-        [Route("admin/treks/edit/{id}")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, TrekPackageCreateViewModel viewModel)
-        {
-            if (id != viewModel.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    // Check if slug already exists (excluding current record)
-                    if (await _trekPackageService.SlugExistsAsync(viewModel.Slug, id))
-                    {
-                        ModelState.AddModelError("Slug", "This slug already exists. Please use a different one.");
-                        return View("Admin/Edit", viewModel);
-                    }
-
-                    var trekPackage = MapViewModelToEntity(viewModel);
-                    await _trekPackageService.UpdateTrekPackageAsync(trekPackage);
-
-                    TempData["Success"] = "Trek package updated successfully!";
-                    return RedirectToAction("AdminIndex");
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", $"Error updating trek package: {ex.Message}");
-                }
-            }
-            return View("Admin/Edit", viewModel);
-        }
-
-        [Route("admin/treks/delete/{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var trekPackage = await _trekPackageService.GetTrekPackageByIdAsync(id);
-            if (trekPackage == null)
-            {
-                return NotFound();
-            }
-            return View("Admin/Delete", trekPackage);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [Route("admin/treks/delete/{id}")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            try
-            {
-                await _trekPackageService.DeleteTrekPackageAsync(id);
-                TempData["Success"] = "Trek package deleted successfully!";
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = $"Error deleting trek package: {ex.Message}";
-            }
-            return RedirectToAction("AdminIndex");
-        }
-
-        // API Endpoints for AJAX
-        [HttpPost]
-        public async Task<IActionResult> CheckSlugAvailability(string slug, int? excludeId = null)
-        {
-            var exists = await _trekPackageService.SlugExistsAsync(slug, excludeId);
-            return Json(new { available = !exists });
-        }
-
-        [HttpPost]
-        public IActionResult GenerateSlug(string title)
-        {
-            var slug = title?.ToLower()
-                .Replace(" ", "-")
-                .Replace("&", "and")
-                .Trim('-');
-
-            // Remove special characters
-            slug = System.Text.RegularExpressions.Regex.Replace(slug, @"[^a-z0-9\-]", "");
-            slug = System.Text.RegularExpressions.Regex.Replace(slug, @"-+", "-");
-
-            return Json(new { slug });
-        }
-
-        // Booking and Inquiry endpoints
-        [HttpPost]
-        public async Task<IActionResult> SubmitBooking([FromBody] BookingRequest request)
-        {
-            try
-            {
-                // Handle booking submission logic here
-                // This could involve saving to database, sending emails, etc.
-
-                return Json(new { success = true, message = "Booking request submitted successfully!" });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Error submitting booking request." });
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> SubmitInquiry([FromBody] InquiryRequest request)
-        {
-            try
-            {
-                // Handle inquiry submission logic here
-
-                return Json(new { success = true, message = "Inquiry submitted successfully!" });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Error submitting inquiry." });
-            }
-        }
-
+      
+      
         private TrekPackage MapViewModelToEntity(TrekPackageCreateViewModel viewModel)
         {
             var trekPackage = new TrekPackage
@@ -395,48 +338,48 @@ namespace UserRoles.Controllers
             return trekPackage;
         }
 
-        private TrekPackageCreateViewModel MapEntityToViewModel(TrekPackage trekPackage)
-        {
-            var viewModel = new TrekPackageCreateViewModel
-            {
-                Id = trekPackage.Id,
-                Title = trekPackage.Title,
-                Slug = trekPackage.Slug,
-                ShortDescription = trekPackage.ShortDescription,
-                Duration = trekPackage.Duration,
-                Difficulty = trekPackage.Difficulty,
-                MaxAltitude = trekPackage.MaxAltitude,
-                TrekkingDistance = trekPackage.TrekkingDistance,
-                StartEndPoint = trekPackage.StartEndPoint,
-                BestSeason = trekPackage.BestSeason,
-                FeaturedImageUrl = trekPackage.FeaturedImageUrl,
-                MapImageUrl = trekPackage.MapImageUrl,
-                VideoUrl = trekPackage.VideoUrl,
-                IsFeatured = trekPackage.IsFeatured,
-                OverviewDescription = trekPackage.Overview?.Description,
-                ShortItinerary = trekPackage.Overview?.ShortItinerary,
-                ImportantNote = trekPackage.Overview?.ImportantNote,
-                OverviewKeyPoints = trekPackage.Overview?.KeyPoints ?? new List<string>(),
-                BasePrice = trekPackage.CostInfo?.BasePrice ?? 0,
-                Currency = trekPackage.CostInfo?.Currency ?? "USD",
-                PriceNote = trekPackage.CostInfo?.PriceNote
-            };
+    //    private TrekPackageCreateViewModel MapEntityToViewModel(TrekPackage trekPackage)
+    //    {
+    //        var viewModel = new TrekPackageCreateViewModel
+    //        {
+    //            Id = trekPackage.Id,
+    //            Title = trekPackage.Title,
+    //            Slug = trekPackage.Slug,
+    //            ShortDescription = trekPackage.ShortDescription,
+    //            Duration = trekPackage.Duration,
+    //            Difficulty = trekPackage.Difficulty,
+    //            MaxAltitude = trekPackage.MaxAltitude,
+    //            TrekkingDistance = trekPackage.TrekkingDistance,
+    //            StartEndPoint = trekPackage.StartEndPoint,
+    //            BestSeason = trekPackage.BestSeason,
+    //            FeaturedImageUrl = trekPackage.FeaturedImageUrl,
+    //            MapImageUrl = trekPackage.MapImageUrl,
+    //            VideoUrl = trekPackage.VideoUrl,
+    //            IsFeatured = trekPackage.IsFeatured,
+    //            OverviewDescription = trekPackage.Overview?.Description,
+    //            ShortItinerary = trekPackage.Overview?.ShortItinerary,
+    //            ImportantNote = trekPackage.Overview?.ImportantNote,
+    //            OverviewKeyPoints = trekPackage.Overview?.KeyPoints ?? new List<string>(),
+    //            BasePrice = trekPackage.CostInfo?.BasePrice ?? 0,
+    //            Currency = trekPackage.CostInfo?.Currency ?? "USD",
+    //            PriceNote = trekPackage.CostInfo?.PriceNote
+    //        };
 
-            // Map collections
-            if (trekPackage.CostInfo?.GroupPricing != null)
-            {
-                viewModel.GroupPricing = trekPackage.CostInfo.GroupPricing
-                    .Select(gp => new GroupPricingViewModel
-                    {
-                        GroupSize = gp.GroupSize,
-                        PricePerPerson = gp.PricePerPerson
-                    }).ToList();
-            }
+    //        // Map collections
+    //        if (trekPackage.CostInfo?.GroupPricing != null)
+    //        {
+    //            viewModel.GroupPricing = trekPackage.CostInfo.GroupPricing
+    //                .Select(gp => new GroupPricingViewModel
+    //                {
+    //                    GroupSize = gp.GroupSize,
+    //                    PricePerPerson = gp.PricePerPerson
+    //                }).ToList();
+    //        }
 
-            // Map other collections similarly...
+    //        // Map other collections similarly...
 
-            return viewModel;
-        }
+    //        return viewModel;
+    //    }
     }
 
     // Request models for API endpoints

@@ -1,610 +1,812 @@
 ﻿@model UserRoles.ViewModels.TrekPackageCreateViewModel
 
 @{
-	ViewData["Title"] = "Create Trek Package";
+    ViewData["Title"] = "Create Trek Package";
 }
 
 <div class="container-fluid">
-	<div class="row">
-		<div class="col-12">
-			<div class="card">
-				<div class="card-header">
-					<h3 class="card-title">Create New Trek Package</h3>
-				</div>
-				<div class="card-body">
-					<form asp-action="Create" method="post" id="trekPackageForm">
-						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-mountain"></i> Create New Trek Package
+                    </h3>
+                </div>
+                <div class="card-body">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>Please correct the following errors:</strong>
+                            <ul class="mb-0 mt-2">
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            </ul>
+                            <button type="button" class="close" data-dismiss="alert">
+                                <span>&times;</span>
+                            </button>
+                        </div>
+                    }
 
-						<div class="card mb-4">
-							<div class="card-header">
-								<h5>Basic Information</h5>
-							</div>
-							<div class="card-body">
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label asp-for="Title" class="control-label"></label>
-											<input asp-for="Title" class="form-control" />
-											<span asp-validation-for="Title" class="text-danger"></span>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label asp-for="Slug" class="control-label"></label>
-											<input asp-for="Slug" class="form-control" />
-											<span asp-validation-for="Slug" class="text-danger"></span>
-										</div>
-									</div>
-								</div>
-								<div class="form-group">
-									<label asp-for="ShortDescription" class="control-label"></label>
-									<textarea asp-for="ShortDescription" class="form-control" rows="3"></textarea>
-									<span asp-validation-for="ShortDescription" class="text-danger"></span>
-								</div>
-								<div class="row">
-									<div class="col-md-3">
-										<div class="form-group">
-											<label asp-for="Duration" class="control-label"></label>
-											<input asp-for="Duration" class="form-control" />
-										</div>
-									</div>
-									<div class="col-md-3">
-										<div class="form-group">
-											<label asp-for="Difficulty" class="control-label"></label>
-											<select asp-for="Difficulty" class="form-control">
-												<option value="">Select Difficulty</option>
-												<option value="Easy">Easy</option>
-												<option value="Moderate">Moderate</option>
-												<option value="Challenging">Challenging</option>
-												<option value="Strenuous">Strenuous</option>
-											</select>
-											<span asp-validation-for="Difficulty" class="text-danger"></span>
-										</div>
-									</div>
-									<div class="col-md-3">
-										<div class="form-group">
-											<label asp-for="MaxAltitude" class="control-label"></label>
-											<input asp-for="MaxAltitude" class="form-control" />
-										</div>
-									</div>
-									<div class="col-md-3">
-										<div class="form-group">
-											<label asp-for="TrekkingDistance" class="control-label"></label>
-											<input asp-for="TrekkingDistance" class="form-control" />
-										</div>
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-md-4">
-										<div class="form-group">
-											<label asp-for="StartEndPoint" class="control-label"></label>
-											<input asp-for="StartEndPoint" class="form-control" />
-										</div>
-									</div>
-									<div class="col-md-4">
-										<div class="form-group">
-											<label asp-for="BestSeason" class="control-label"></label>
-											<input asp-for="BestSeason" class="form-control" />
-										</div>
-									</div>
-									<div class="col-md-4">
-										<div class="form-check mt-4">
-											<input asp-for="IsFeatured" class="form-check-input" type="checkbox" />
-											<label asp-for="IsFeatured" class="form-check-label">Featured Package</label>
-										</div>
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label asp-for="FeaturedImageUrl" class="control-label"></label>
-											<input asp-for="FeaturedImageUrl" class="form-control" />
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label asp-for="MapImageUrl" class="control-label"></label>
-											<input asp-for="MapImageUrl" class="form-control" />
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
+                    <form asp-action="Create" method="post" id="trekPackageForm" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-						<div class="card mb-4">
-							<div class="card-header">
-								<h5>Overview</h5>
-							</div>
-							<div class="card-body">
-								<div class="form-group">
-									<label asp-for="OverviewDescription" class="control-label"></label>
-									<textarea asp-for="OverviewDescription" class="form-control" rows="5"></textarea>
-								</div>
-								<div class="form-group">
-									<label>Key Points</label>
-									<div id="keyPointsContainer">
-										<div class="input-group mb-2">
-											<input type="text" class="form-control" name="OverviewKeyPoints[0]" placeholder="Enter key point" />
-											<div class="input-group-append">
-												<button type="button" class="btn btn-danger remove-keypoint">Remove</button>
-											</div>
-										</div>
-									</div>
-									<button type="button" class="btn btn-success" id="addKeyPoint">Add Key Point</button>
-								</div>
-							</div>
-						</div>
+                        <!-- Progress Steps -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="progress-steps">
+                                    <div class="step active" data-step="1">
+                                        <span class="step-number">1</span>
+                                        <span class="step-title">Basic Info</span>
+                                    </div>
+                                    <div class="step" data-step="2">
+                                        <span class="step-number">2</span>
+                                        <span class="step-title">Overview</span>
+                                    </div>
+                                    <div class="step" data-step="3">
+                                        <span class="step-number">3</span>
+                                        <span class="step-title">Pricing</span>
+                                    </div>
+                                    <div class="step" data-step="4">
+                                        <span class="step-number">4</span>
+                                        <span class="step-title">Details</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-						<div class="card mb-4">
-							<div class="card-header">
-								<h5>Cost Information</h5>
-							</div>
-							<div class="card-body">
-								<div class="row">
-									@* <div class="col-md-6">
-										<div class="form-group">
-											<label asp-for="Price" class="control-label"></label>
-											<input asp-for="Price" class="form-control" type="number" step="0.01" />
-											<span asp-validation-for="Price" class="text-danger"></span>
-										</div>
-									</div> *@
-									<div class="col-md-6">
-										<div class="form-group">
-											<label asp-for="PriceNote" class="control-label"></label>
-											<input asp-for="PriceNote" class="form-control" />
-										</div>
-									</div>
-								</div>
-								<div class="form-group">
-									<label>Price Breakdown</label>
-									<div id="priceBreakdownContainer">
-										<div class="row mb-2">
-											<div class="col-md-4">
-												<input type="text" class="form-control" name="PriceBreakdown[0].Item" placeholder="Item" />
-											</div>
-											<div class="col-md-3">
-												<input type="text" class="form-control" name="PriceBreakdown[0].Cost" placeholder="Cost" />
-											</div>
-											<div class="col-md-3">
-												<div class="form-check">
-													<input type="checkbox" class="form-check-input" name="PriceBreakdown[0].Included" />
-													<label class="form-check-label">Included</label>
-												</div>
-											</div>
-											<div class="col-md-2">
-												<button type="button" class="btn btn-danger remove-breakdown">Remove</button>
-											</div>
-										</div>
-									</div>
-									<button type="button" class="btn btn-success" id="addPriceBreakdown">Add Price Item</button>
-								</div>
-							</div>
-						</div>
+                        <!-- Step 1: Basic Information -->
+                        <div class="form-step active" id="step-1">
+                            <div class="card mb-4">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> Basic Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="form-group">
+                                                <label asp-for="Title" class="form-label required">Trek Title</label>
+                                                <input asp-for="Title" class="form-control form-control-lg" placeholder="e.g., Everest Base Camp Trek" />
+                                                <span asp-validation-for="Title" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label asp-for="Slug" class="form-label required">URL Slug</label>
+                                                <div class="input-group">
+                                                    <input asp-for="Slug" class="form-control" placeholder="everest-base-camp-trek" />
+                                                    <div class="input-group-append">
+                                                        <button type="button" class="btn btn-outline-secondary" id="generateSlug">
+                                                            <i class="fas fa-magic"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <span asp-validation-for="Slug" class="text-danger"></span>
+                                                <small class="form-text text-muted">URL-friendly version of the title</small>
+                                            </div>
+                                        </div>
+                                    </div>
 
-						<div class="card mb-4">
-							<div class="card-header">
-								<h5>Itinerary</h5>
-							</div>
-							<div class="card-body">
-								<div id="itineraryContainer">
-									<div class="itinerary-day border p-3 mb-3">
-										<h6>Day 1</h6>
-										<div class="row">
-											<div class="col-md-6">
-												<input type="hidden" name="ItineraryDays[0].DayNumber" value="1" />
-												<div class="form-group">
-													<label>Title</label>
-													<input type="text" class="form-control" name="ItineraryDays[0].Title" />
-												</div>
-											</div>
-											<div class="col-md-3">
-												<div class="form-group">
-													<label>Duration</label>
-													<input type="text" class="form-control" name="ItineraryDays[0].Duration" />
-												</div>
-											</div>
-											<div class="col-md-3">
-												<div class="form-group">
-													<label>Altitude</label>
-													<input type="text" class="form-control" name="ItineraryDays[0].Altitude" />
-												</div>
-											</div>
-										</div>
-										<div class="form-group">
-											<label>Description</label>
-											<textarea class="form-control" name="ItineraryDays[0].Description" rows="3"></textarea>
-										</div>
-										<div class="row">
-											<div class="col-md-6">
-												<div class="form-group">
-													<label>Accommodation</label>
-													<input type="text" class="form-control" name="ItineraryDays[0].Accommodation" />
-												</div>
-											</div>
-											<div class="col-md-6">
-												<div class="form-group">
-													<label>Meals</label>
-													<input type="text" class="form-control" name="ItineraryDays[0].Meals" />
-												</div>
-											</div>
-										</div>
-										<button type="button" class="btn btn-danger remove-day">Remove Day</button>
-									</div>
-								</div>
-								<button type="button" class="btn btn-success" id="addItineraryDay">Add Day</button>
-							</div>
-						</div>
+                                    <div class="form-group">
+                                        <label asp-for="ShortDescription" class="form-label required">Short Description</label>
+                                        <textarea asp-for="ShortDescription" class="form-control" rows="3"
+                                                  placeholder="Brief description of the trek (max 500 characters)" maxlength="500"></textarea>
+                                        <span asp-validation-for="ShortDescription" class="text-danger"></span>
+                                        <div class="form-text">
+                                            <span id="charCount">0</span>/500 characters
+                                        </div>
+                                    </div>
 
-						<div class="card mb-4">
-							<div class="card-header">
-								<h5>Highlights</h5>
-							</div>
-							<div class="card-body">
-								<div id="highlightsContainer">
-									<div class="row mb-3">
-										<div class="col-md-4">
-											<input type="text" class="form-control" name="Highlights[0].Title" placeholder="Highlight Title" />
-										</div>
-										<div class="col-md-4">
-											<input type="text" class="form-control" name="Highlights[0].Description" placeholder="Description" />
-										</div>
-										<div class="col-md-2">
-											<input type="text" class="form-control" name="Highlights[0].IconClass" placeholder="Icon Class" />
-										</div>
-										<div class="col-md-2">
-											<button type="button" class="btn btn-danger remove-highlight">Remove</button>
-										</div>
-									</div>
-								</div>
-								<button type="button" class="btn btn-success" id="addHighlight">Add Highlight</button>
-							</div>
-						</div>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label asp-for="Duration" class="form-label required">Duration</label>
+                                                <input asp-for="Duration" class="form-control" placeholder="e.g., 12 Days" />
+                                                <span asp-validation-for="Duration" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label asp-for="Difficulty" class="form-label required">Difficulty Level</label>
+                                                <select asp-for="Difficulty" class="form-select">
+                                                    <option value="">Select Difficulty</option>
+                                                    <option value="Easy">Easy</option>
+                                                    <option value="Moderate">Moderate</option>
+                                                    <option value="Challenging">Challenging</option>
+                                                    <option value="Strenuous">Strenuous</option>
+                                                    <option value="Extreme">Extreme</option>
+                                                </select>
+                                                <span asp-validation-for="Difficulty" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label asp-for="MaxAltitude" class="form-label">Maximum Altitude</label>
+                                                <input asp-for="MaxAltitude" class="form-control" placeholder="e.g., 5,364m" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label asp-for="TrekkingDistance" class="form-label">Trekking Distance</label>
+                                                <input asp-for="TrekkingDistance" class="form-control" placeholder="e.g., 130 km" />
+                                            </div>
+                                        </div>
+                                    </div>
 
-						<div class="card mb-4">
-							<div class="card-header">
-								<h5>Package Includes</h5>
-							</div>
-							<div class="card-body">
-								<div id="includesContainer">
-									<div class="row mb-2">
-										<div class="col-md-5">
-											<input type="text" class="form-control" name="Includes[0].Item" placeholder="Included Item" />
-										</div>
-										<div class="col-md-5">
-											<input type="text" class="form-control" name="Includes[0].Description" placeholder="Description" />
-										</div>
-										<div class="col-md-2">
-											<button type="button" class="btn btn-danger remove-include">Remove</button>
-										</div>
-									</div>
-								</div>
-								<button type="button" class="btn btn-success" id="addInclude">Add Include</button>
-							</div>
-						</div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label asp-for="StartEndPoint" class="form-label">Start/End Point</label>
+                                                <input asp-for="StartEndPoint" class="form-control" placeholder="e.g., Lukla" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label asp-for="BestSeason" class="form-label">Best Season</label>
+                                                <input asp-for="BestSeason" class="form-control" placeholder="e.g., Mar-May, Sep-Nov" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check mt-4 pt-2">
+                                                <input asp-for="IsFeatured" class="form-check-input" type="checkbox" />
+                                                <label asp-for="IsFeatured" class="form-check-label">
+                                                    <i class="fas fa-star text-warning"></i> Featured Package
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
 
-						<div class="card mb-4">
-							<div class="card-header">
-								<h5>Package Excludes</h5>
-							</div>
-							<div class="card-body">
-								<div id="excludesContainer">
-									<div class="row mb-2">
-										<div class="col-md-5">
-											<input type="text" class="form-control" name="Excludes[0].Item" placeholder="Excluded Item" />
-										</div>
-										<div class="col-md-5">
-											<input type="text" class="form-control" name="Excludes[0].Description" placeholder="Description" />
-										</div>
-										<div class="col-md-2">
-											<button type="button" class="btn btn-danger remove-exclude">Remove</button>
-										</div>
-									</div>
-								</div>
-								<button type="button" class="btn btn-success" id="addExclude">Add Exclude</button>
-							</div>
-						</div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label asp-for="FeaturedImageUrl" class="form-label">Featured Image URL</label>
+                                                <input asp-for="FeaturedImageUrl" class="form-control" placeholder="https://..." />
+                                                <small class="form-text text-muted">Main image for the trek</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label asp-for="MapImageUrl" class="form-label">Route Map URL</label>
+                                                <input asp-for="MapImageUrl" class="form-control" placeholder="https://..." />
+                                                <small class="form-text text-muted">Trek route map image</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label asp-for="VideoUrl" class="form-label">Video URL</label>
+                                                <input asp-for="VideoUrl" class="form-control" placeholder="https://youtube.com/..." />
+                                                <small class="form-text text-muted">Promotional video</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-						<div class="card mb-4">
-							<div class="card-header">
-								<h5>Frequently Asked Questions</h5>
-							</div>
-							<div class="card-body">
-								<div id="faqsContainer">
-									<div class="faq-item border p-3 mb-3">
-										<div class="form-group">
-											<label>Question</label>
-											<input type="text" class="form-control" name="FAQs[0].Question" />
-										</div>
-										<div class="form-group">
-											<label>Answer</label>
-											<textarea class="form-control" name="FAQs[0].Answer" rows="3"></textarea>
-										</div>
-										<button type="button" class="btn btn-danger remove-faq">Remove FAQ</button>
-									</div>
-								</div>
-								<button type="button" class="btn btn-success" id="addFAQ">Add FAQ</button>
-							</div>
-						</div>
+                        <!-- Step 2: Overview -->
+                        <div class="form-step" id="step-2" style="display: none;">
+                            <div class="card mb-4">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-file-alt"></i> Overview & Description</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label asp-for="OverviewDescription" class="form-label">Overview Description</label>
+                                        <textarea asp-for="OverviewDescription" class="form-control" rows="6"
+                                                  placeholder="Detailed description of the trek, what makes it special, and what trekkers can expect..."></textarea>
+                                        <small class="form-text text-muted">Detailed overview of the trek experience</small>
+                                    </div>
 
-						<div class="card mb-4">
-							<div class="card-header">
-								<h5>Gallery Images</h5>
-							</div>
-							<div class="card-body">
-								<div id="galleryContainer">
-									<div class="row mb-3">
-										<div class="col-md-4">
-											<input type="text" class="form-control" name="GalleryImages[0].ImageUrl" placeholder="Image URL" />
-										</div>
-										<div class="col-md-3">
-											<input type="text" class="form-control" name="GalleryImages[0].AltText" placeholder="Alt Text" />
-										</div>
-										<div class="col-md-3">
-											<input type="text" class="form-control" name="GalleryImages[0].Caption" placeholder="Caption" />
-										</div>
-										<div class="col-md-2">
-											<button type="button" class="btn btn-danger remove-gallery">Remove</button>
-										</div>
-									</div>
-								</div>
-								<button type="button" class="btn btn-success" id="addGalleryImage">Add Image</button>
-							</div>
-						</div>
+                                    <div class="form-group">
+                                        <label asp-for="ShortItinerary" class="form-label">Short Itinerary</label>
+                                        <textarea asp-for="ShortItinerary" class="form-control" rows="3"
+                                                  placeholder="Brief day-by-day summary..."></textarea>
+                                    </div>
 
-						<div class="card">
-							<div class="card-body">
-								<div class="form-group">
-									<input type="submit" value="Create Trek Package" class="btn btn-primary btn-lg" />
-									<a asp-action="Index" class="btn btn-secondary btn-lg">Cancel</a>
-								</div>
-							</div>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
+                                    <div class="form-group">
+                                        <label asp-for="ImportantNote" class="form-label">Important Notes</label>
+                                        <textarea asp-for="ImportantNote" class="form-control" rows="3"
+                                                  placeholder="Important information trekkers should know..."></textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Key Points</label>
+                                        <div id="keyPointsContainer">
+                                            @for (int i = 0; i < (Model?.OverviewKeyPoints?.Count ?? 1); i++)
+                                            {
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" name="OverviewKeyPoints[@i]"
+                                                           value="@(Model?.OverviewKeyPoints?.ElementAtOrDefault(i))"
+                                                           placeholder="Enter key point" />
+                                                    <div class="input-group-append">
+                                                        <button type="button" class="btn btn-outline-danger remove-keypoint">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                        <button type="button" class="btn btn-outline-success btn-sm" id="addKeyPoint">
+                                            <i class="fas fa-plus"></i> Add Key Point
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Pricing -->
+                        <div class="form-step" id="step-3" style="display: none;">
+                            <div class="card mb-4">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-dollar-sign"></i> Pricing Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label asp-for="BasePrice" class="form-label required">Base Price</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    <input asp-for="BasePrice" class="form-control" type="number" step="0.01" min="0" />
+                                                </div>
+                                                <span asp-validation-for="BasePrice" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label asp-for="Currency" class="form-label">Currency</label>
+                                                <select asp-for="Currency" class="form-select">
+                                                    <option value="USD">USD ($)</option>
+                                                    <option value="EUR">EUR (€)</option>
+                                                    <option value="GBP">GBP (£)</option>
+                                                    <option value="NPR">NPR (₨)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label asp-for="PriceNote" class="form-label">Price Note</label>
+                                                <input asp-for="PriceNote" class="form-control" placeholder="e.g., Per person" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Group Pricing</label>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Group Size</th>
+                                                        <th>Price Per Person</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="groupPricingContainer">
+                                                    @for (int i = 0; i < (Model?.GroupPricing?.Count ?? 4); i++)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                <input type="text" class="form-control"
+                                                                       name="GroupPricing[@i].GroupSize"
+                                                                       value="@(Model?.GroupPricing?.ElementAtOrDefault(i)?.GroupSize ?? (i == 0 ? "1 Pax" : i == 1 ? "2-3 Pax" : i == 2 ? "4-9 Pax" : "10-14 Pax"))" />
+                                                            </td>
+                                                            <td>
+                                                                <input type="number" class="form-control" step="0.01" min="0"
+                                                                       name="GroupPricing[@i].PricePerPerson"
+                                                                       value="@(Model?.GroupPricing?.ElementAtOrDefault(i)?.PricePerPerson ?? 0)" />
+                                                            </td>
+                                                            <td>
+                                                                <button type="button" class="btn btn-outline-danger btn-sm remove-group-pricing">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <button type="button" class="btn btn-outline-success btn-sm" id="addGroupPricing">
+                                            <i class="fas fa-plus"></i> Add Group Pricing
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Additional Details -->
+                        <div class="form-step" id="step-4" style="display: none;">
+                            <!-- Itinerary -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-route"></i> Itinerary</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="itineraryContainer">
+                                        <div class="itinerary-day border rounded p-3 mb-3 bg-light">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <h6 class="mb-0"><i class="fas fa-calendar-day"></i> Day 1</h6>
+                                                <button type="button" class="btn btn-outline-danger btn-sm remove-day">
+                                                    <i class="fas fa-trash"></i> Remove
+                                                </button>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <input type="hidden" name="ItineraryDays[0].DayNumber" value="1" />
+                                                    <div class="form-group">
+                                                        <label class="form-label">Title</label>
+                                                        <input type="text" class="form-control" name="ItineraryDays[0].Title"
+                                                               placeholder="e.g., Arrival in Kathmandu" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="form-label">Duration</label>
+                                                        <input type="text" class="form-control" name="ItineraryDays[0].Duration"
+                                                               placeholder="e.g., 6-7 hours" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="form-label">Altitude</label>
+                                                        <input type="text" class="form-control" name="ItineraryDays[0].Altitude"
+                                                               placeholder="e.g., 1,400m" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Description</label>
+                                                <textarea class="form-control" name="ItineraryDays[0].Description" rows="2"
+                                                          placeholder="Detailed description of the day's activities..."></textarea>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="form-label">Accommodation</label>
+                                                        <input type="text" class="form-control" name="ItineraryDays[0].Accommodation"
+                                                               placeholder="e.g., Hotel" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="form-label">Meals</label>
+                                                        <input type="text" class="form-control" name="ItineraryDays[0].Meals"
+                                                               placeholder="e.g., B, L, D" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="form-label">Transportation</label>
+                                                        <input type="text" class="form-control" name="ItineraryDays[0].Transportation"
+                                                               placeholder="e.g., Flight" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-success" id="addItineraryDay">
+                                        <i class="fas fa-plus"></i> Add Day
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Highlights, Includes, Excludes, FAQs similar structure but simplified for brevity -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-star"></i> Highlights</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="highlightsContainer">
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <input type="text" class="form-control" name="Highlights[0].Title" placeholder="Highlight Title" />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input type="text" class="form-control" name="Highlights[0].Description" placeholder="Description" />
+                                            </div>
+                                            <div class="col-md-2">
+                                                <button type="button" class="btn btn-outline-danger btn-sm remove-highlight">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-success btn-sm" id="addHighlight">
+                                        <i class="fas fa-plus"></i> Add Highlight
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-secondary" id="prevStep" style="display: none;">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </button>
+                            <div></div>
+                            <div>
+                                <button type="button" class="btn btn-primary" id="nextStep">
+                                    Next <i class="fas fa-chevron-right"></i>
+                                </button>
+                                <button type="submit" class="btn btn-success btn-lg" id="submitBtn" style="display: none;">
+                                    <i class="fas fa-save"></i> Create Trek Package
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
+<style>
+    .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .progress-steps::before {
+        content: '';
+        position: absolute;
+        top: 20px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #e9ecef;
+        z-index: 1;
+    }
+
+    .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+        background: white;
+        padding: 0 10px;
+    }
+
+    .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e9ecef;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .step.active .step-number {
+        background: #007bff;
+        color: white;
+    }
+
+    .step-title {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+
+    .step.active .step-title {
+        color: #007bff;
+        font-weight: 600;
+    }
+
+    .form-label.required::after {
+        content: " *";
+        color: #dc3545;
+    }
+
+    .form-step {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    keyframes fadeIn {
+        from { opacity: 0; transform: translateX(20px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    .btn-outline-success:hover, .btn-outline-danger:hover {
+        transform: translateY(-1px);
+    }
+
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    .card-header h5 i {
+        margin-right: 8px;
+        color: #007bff;
+    }
+
+    .itinerary-day {
+        transition: all 0.3s ease;
+    }
+
+    .itinerary-day:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .alert {
+        border: none;
+        border-radius: 8px;
+    }
+
+    .form-control, .form-select {
+        border-radius: 6px;
+    }
+
+    .btn {
+        border-radius: 6px;
+    }
+
+    .card {
+        border: none;
+        border-radius: 10px;
+    }
+
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        let currentStep = 1;
+        const totalSteps = 4;
+        let keyPointIndex = 1;
+        let itineraryDayIndex = 1;
+        let highlightIndex = 1;
+        let groupPricingIndex = 4; // Start after initial 4 rows
+
+        // Character counter for short description
+        $('#ShortDescription').on('input', function () {
+            $('#charCount').text($(this).val().length);
+        });
+
+        // Auto-generate slug
+        $('#generateSlug').click(function () {
+            const title = $('#Title').val();
+            if (title) {
+                $.post('/TrekContent/GenerateSlug', { title: title }, function (data) {
+                    $('#Slug').val(data.slug);
+                });
+            }
+        });
+
+        // Step navigation
+        $('#nextStep').click(function () {
+            if (currentStep < totalSteps) {
+                showStep(currentStep + 1);
+            }
+        });
+
+        $('#prevStep').click(function () {
+            if (currentStep > 1) {
+                showStep(currentStep - 1);
+            }
+        });
+
+        function showStep(step) {
+            $('.form-step').hide();
+            $('.step').removeClass('active');
+
+            $(`#step-${step}`).show().addClass('active');
+            $(`.step[data-step="${step}"]`).addClass('active');
+
+            currentStep = step;
+
+            $('#prevStep').toggle(step > 1);
+            $('#nextStep').toggle(step < totalSteps);
+            $('#submitBtn').toggle(step === totalSteps);
+        }
+
+        // Dynamic form controls
+        $('#addKeyPoint').click(function () {
+            const html = `
+                <div class="input-group mb-2">
+                    <input type="text" class="form-control" name="OverviewKeyPoints[${keyPointIndex}]" placeholder="Enter key point" />
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-outline-danger remove-keypoint">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>`;
+            $('#keyPointsContainer').append(html);
+            keyPointIndex++;
+        });
+
+        $(document).on('click', '.remove-keypoint', function () {
+            $(this).closest('.input-group').remove();
+        });
+
+        $('#addItineraryDay').click(function () {
+            const dayNumber = itineraryDayIndex + 1;
+            const html = `
+                <div class="itinerary-day border rounded p-3 mb-3 bg-light">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0"><i class="fas fa-calendar-day"></i> Day ${dayNumber}</h6>
+                        <button type="button" class="btn btn-outline-danger btn-sm remove-day">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="hidden" name="ItineraryDays[${itineraryDayIndex}].DayNumber" value="${dayNumber}" />
+                            <div class="form-group">
+                                <label class="form-label">Title</label>
+                                <input type="text" class="form-control" name="ItineraryDays[${itineraryDayIndex}].Title" placeholder="e.g., Trek to Base Camp" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label">Duration</label>
+                                    <input type="text" class="form-control" name="ItineraryDays[${itineraryDayIndex}]. Duration" placeholder="e.g., 6-7 hours" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label">Altitude</label>
+                                    <input type="text" class="form-control" name="ItineraryDays[${itineraryDayIndex}].Altitude" placeholder="e.g., 1,400m" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" name="ItineraryDays[${itineraryDayIndex}].Description" rows="2" placeholder="Detailed description of the day's activities..."></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label">Accommodation</label>
+                                    <input type="text" class="form-control" name="ItineraryDays[${itineraryDayIndex}].Accommodation" placeholder="e.g., Hotel" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label">Meals</label>
+                                    <input type="text" class="form-control" name="ItineraryDays[${itineraryDayIndex}].Meals" placeholder="e.g., B, L, D" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label">Transportation</label>
+                                    <input type="text" class="form-control" name="ItineraryDays[${itineraryDayIndex}].Transportation" placeholder="e.g., Flight" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+            $('#itineraryContainer').append(html);
+            itineraryDayIndex++;
+        });
+
+        $(document).on('click', '.remove-day', function () {
+            $(this).closest('.itinerary-day').remove();
+            // Renumber remaining days
+            $('.itinerary-day').each(function (index) {
+                const dayNumber = index + 1;
+                $(this).find('h6').html(`<i class="fas fa-calendar-day"></i> Day ${dayNumber}`);
+                $(this).find('input[name*="DayNumber"]').val(dayNumber);
+                $(this).find('input, textarea').each(function () {
+                    const name = $(this).attr('name');
+                    if (name && name.includes('ItineraryDays[')) {
+                        $(this).attr('name', name.replace(/ItineraryDays\[\d+\]/, `ItineraryDays[${index}]`));
+                    }
+                });
+            });
+            itineraryDayIndex = $('.itinerary-day').length;
+        });
+
+        $('#addHighlight').click(function () {
+            const html = `
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="Highlights[${highlightIndex}].Title" placeholder="Highlight Title" />
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" name="Highlights[${highlightIndex}].Description" placeholder="Description" />
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-danger btn-sm remove-highlight">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>`;
+            $('#highlightsContainer').append(html);
+            highlightIndex++;
+        });
+
+        $(document).on('click', '.remove-highlight', function () {
+            $(this).closest('.row').remove();
+        });
+
+        $('#addGroupPricing').click(function () {
+            const html = `
+                    <tr>
+                        <td>
+                            <input type="text" class="form-control" name="GroupPricing[${groupPricingIndex}].GroupSize" placeholder="e.g., 15+ Pax" />
+                        </td>
+                        <td>
+                            <input type="number" class="form-control" step="0.01" min="0" name="GroupPricing[${groupPricingIndex}].PricePerPerson" />
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-outline-danger btn-sm remove-group-pricing">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+            $('#groupPricingContainer').append(html);
+            groupPricingIndex++;
+        });
+
+        $(document).on('click', '.remove-group-pricing', function () {
+            $(this).closest('tr').remove();
+        });
+
+        // Form validation before step change
+        $('#nextStep').click(function (e) {
+            const currentStepElement = $(`#step-${currentStep}`);
+            const requiredFields = currentStepElement.find('input[required], select[required], textarea[required]');
+            let isValid = true;
+
+            requiredFields.each(function () {
+                if (!$(this).val().trim()) {
+                    $(this).addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $(this).removeClass('is-invalid');
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                alert('Please fill in all required fields before proceeding.');
+                return false;
+            }
+        });
+
+        // Remove validation styling on input
+        $(document).on('input change', '.form-control, .form-select', function () {
+            $(this).removeClass('is-invalid');
+        });
+
+        // Initialize character counter
+        $('#charCount').text($('#ShortDescription').val().length);
+
+        // Auto-generate slug on title change
+        $('#Title').on('input', function () {
+            const title = $(this).val();
+            const slug = title.toLowerCase()
+                .replace(/[^a-z0-9 -]/g, '') // Remove invalid chars
+                .replace(/\s+/g, '-') // Replace spaces with -
+                .replace(/-+/g, '-') // Replace multiple - with single -
+                .replace(/^-+/, '') // Trim - from start of text
+                .replace(/-+$/, ''); // Trim - from end of text
+            $('#Slug').val(slug);
+        });
+
+        // Form submission with loading state
+        $('#trekPackageForm').on('submit', function () {
+            $('#submitBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Creating...');
+        });
+    });
+</script>
+
 @section Scripts {
-	@{
-		await Html.RenderPartialAsync("_ValidationScriptsPartial");
-	}
-
-	<script>
-		$(document).ready(function () {
-			let keyPointIndex = 1;
-			let priceBreakdownIndex = 1;
-			let itineraryDayIndex = 1;
-			let highlightIndex = 1;
-			let includeIndex = 1;
-			let excludeIndex = 1;
-			let faqIndex = 1;
-			let galleryIndex = 1;
-
-			// Add Key Point
-			$('#addKeyPoint').click(function () {
-				const html = `
-							<div class="input-group mb-2">
-								<input type="text" class="form-control" name="OverviewKeyPoints[${keyPointIndex}]" placeholder="Enter key point" />
-								<div class="input-group-append">
-									<button type="button" class="btn btn-danger remove-keypoint">Remove</button>
-								</div>
-							</div>`;
-				$('#keyPointsContainer').append(html);
-				keyPointIndex++;
-			});
-
-			// Remove Key Point
-			$(document).on('click', '.remove-keypoint', function () {
-				$(this).closest('.input-group').remove();
-			});
-
-			// Add Price Breakdown
-			$('#addPriceBreakdown').click(function () {
-				const html = `
-							<div class="row mb-2">
-								<div class="col-md-4">
-									<input type="text" class="form-control" name="PriceBreakdown[${priceBreakdownIndex}].Item" placeholder="Item" />
-								</div>
-								<div class="col-md-3">
-									<input type="text" class="form-control" name="PriceBreakdown[${priceBreakdownIndex}].Cost" placeholder="Cost" />
-								</div>
-								<div class="col-md-3">
-									<div class="form-check">
-										<input type="checkbox" class="form-check-input" name="PriceBreakdown[${priceBreakdownIndex}].Included" />
-										<label class="form-check-label">Included</label>
-									</div>
-								</div>
-								<div class="col-md-2">
-									<button type="button" class="btn btn-danger remove-breakdown">Remove</button>
-								</div>
-							</div>`;
-				$('#priceBreakdownContainer').append(html);
-				priceBreakdownIndex++;
-			});
-
-			// Remove Price Breakdown
-			$(document).on('click', '.remove-breakdown', function () {
-				$(this).closest('.row').remove();
-			});
-
-			// Add Itinerary Day
-			$('#addItineraryDay').click(function () {
-				const dayNumber = itineraryDayIndex + 1;
-				const html = `
-							<div class="itinerary-day border p-3 mb-3">
-								<h6>Day ${dayNumber}</h6>
-								<div class="row">
-									<div class="col-md-6">
-										<input type="hidden" name="ItineraryDays[${itineraryDayIndex}].DayNumber" value="${dayNumber}" />
-										<div class="form-group">
-											<label>Title</label>
-											<input type="text" class="form-control" name="ItineraryDays[${itineraryDayIndex}].Title" />
-										</div>
-									</div>
-									<div class="col-md-3">
-										<div class="form-group">
-											<label>Duration</label>
-											<input type="text" class="form-control" name="ItineraryDays[${itineraryDayIndex}].Duration" />
-										</div>
-									</div>
-									<div class="col-md-3">
-										<div class="form-group">
-											<label>Altitude</label>
-											<input type="text" class="form-control" name="ItineraryDays[${itineraryDayIndex}].Altitude" />
-										</div>
-									</div>
-								</div>
-								<div class="form-group">
-									<label>Description</label>
-									<textarea class="form-control" name="ItineraryDays[${itineraryDayIndex}].Description" rows="3"></textarea>
-								</div>
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>Accommodation</label>
-											<input type="text" class="form-control" name="ItineraryDays[${itineraryDayIndex}].Accommodation" />
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>Meals</label>
-											<input type="text" class="form-control" name="ItineraryDays[${itineraryDayIndex}].Meals" />
-										</div>
-									</div>
-								</div>
-								<button type="button" class="btn btn-danger remove-day">Remove Day</button>
-							</div>`;
-				$('#itineraryContainer').append(html);
-				itineraryDayIndex++;
-			});
-
-			// Remove Itinerary Day
-			$(document).on('click', '.remove-day', function () {
-				$(this).closest('.itinerary-day').remove();
-			});
-
-			// Add Highlight
-			$('#addHighlight').click(function () {
-				const html = `
-							<div class="row mb-3">
-								<div class="col-md-4">
-									<input type="text" class="form-control" name="Highlights[${highlightIndex}].Title" placeholder="Highlight Title" />
-								</div>
-								<div class="col-md-4">
-									<input type="text" class="form-control" name="Highlights[${highlightIndex}].Description" placeholder="Description" />
-								</div>
-								<div class="col-md-2">
-									<input type="text" class="form-control" name="Highlights[${highlightIndex}].IconClass" placeholder="Icon Class" />
-								</div>
-								<div class="col-md-2">
-									<button type="button" class="btn btn-danger remove-highlight">Remove</button>
-								</div>
-							</div>`;
-				$('#highlightsContainer').append(html);
-				highlightIndex++;
-			});
-
-			// Remove Highlight
-			$(document).on('click', '.remove-highlight', function () {
-				$(this).closest('.row').remove();
-			});
-
-			// Add Include
-			$('#addInclude').click(function () {
-				const html = `
-							<div class="row mb-2">
-								<div class="col-md-5">
-									<input type="text" class="form-control" name="Includes[${includeIndex}].Item" placeholder="Included Item" />
-								</div>
-								<div class="col-md-5">
-									<input type="text" class="form-control" name="Includes[${includeIndex}].Description" placeholder="Description" />
-								</div>
-								<div class="col-md-2">
-									<button type="button" class="btn btn-danger remove-include">Remove</button>
-								</div>
-							</div>`;
-				$('#includesContainer').append(html);
-				includeIndex++;
-			});
-
-			// Remove Include
-			$(document).on('click', '.remove-include', function () {
-				$(this).closest('.row').remove();
-			});
-
-			// Add Exclude
-			$('#addExclude').click(function () {
-				const html = `
-							<div class="row mb-2">
-								<div class="col-md-5">
-									<input type="text" class="form-control" name="Excludes[${excludeIndex}].Item" placeholder="Excluded Item" />
-								</div>
-								<div class="col-md-5">
-									<input type="text" class="form-control" name="Excludes[${excludeIndex}].Description" placeholder="Description" />
-								</div>
-								<div class="col-md-2">
-									<button type="button" class="btn btn-danger remove-exclude">Remove</button>
-								</div>
-							</div>`;
-				$('#excludesContainer').append(html);
-				excludeIndex++;
-			});
-
-			// Remove Exclude
-			$(document).on('click', '.remove-exclude', function () {
-				$(this).closest('.row').remove();
-			});
-
-			// Add FAQ
-			$('#addFAQ').click(function () {
-				const html = `
-							<div class="faq-item border p-3 mb-3">
-								<div class="form-group">
-									<label>Question</label>
-									<input type="text" class="form-control" name="FAQs[${faqIndex}].Question" />
-								</div>
-								<div class="form-group">
-									<label>Answer</label>
-									<textarea class="form-control" name="FAQs[${faqIndex}].Answer" rows="3"></textarea>
-								</div>
-								<button type="button" class="btn btn-danger remove-faq">Remove FAQ</button>
-							</div>`;
-				$('#faqsContainer').append(html);
-				faqIndex++;
-			});
-
-			// Remove FAQ
-			$(document).on('click', '.remove-faq', function () {
-				$(this).closest('.faq-item').remove();
-			});
-
-			// Add Gallery Image
-			$('#addGalleryImage').click(function () {
-				const html = `
-							<div class="row mb-3">
-								<div class="col-md-4">
-									<input type="text" class="form-control" name="GalleryImages[${galleryIndex}].ImageUrl" placeholder="Image URL" />
-								</div>
-								<div class="col-md-3">
-									<input type="text" class="form-control" name="GalleryImages[${galleryIndex}].AltText" placeholder="Alt Text" />
-								</div>
-								<div class="col-md-3">
-									<input type="text" class="form-control" name="GalleryImages[${galleryIndex}].Caption" placeholder="Caption" />
-								</div>
-								<div class="col-md-2">
-									<button type="button" class="btn btn-danger remove-gallery">Remove</button>
-								</div>
-							</div>`;
-				$('#galleryContainer').append(html);
-				galleryIndex++;
-			});
-
-			// Remove Gallery Image
-			$(document).on('click', '.remove-gallery', function () {
-				$(this).closest('.row').remove();
-			});
-				});
-	</script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
