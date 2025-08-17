@@ -23,16 +23,18 @@
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         // Relationships
+        public List<TrekHighlight> Highlights { get; set; } = new List<TrekHighlight>();
         public TrekOverview Overview { get; set; }
         public TrekItinerary Itinerary { get; set; }
+        public List<TrekDeparture> Departures { get; set; } = new List<TrekDeparture>();
         public TrekCostInfo CostInfo { get; set; }
         public List<TrekFAQ> FAQs { get; set; } = new List<TrekFAQ>();
         public List<TrekGalleryImage> GalleryImages { get; set; } = new List<TrekGalleryImage>();
+       
         public List<TrekInclusion> Includes { get; set; } = new List<TrekInclusion>();
         public List<TrekInclusion> Excludes { get; set; } = new List<TrekInclusion>();
-        public List<TrekHighlight> Highlights { get; set; } = new List<TrekHighlight>();
         public List<TrekReview> Reviews { get; set; } = new List<TrekReview>();
-        public List<TrekDeparture> Departures { get; set; } = new List<TrekDeparture>();
+     
     }
 
     public class TrekOverview

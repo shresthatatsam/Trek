@@ -1,18 +1,11 @@
 ﻿@model UserRoles.ViewModels.TrekPackageDisplayViewModel
-@{
-    ViewData["Title"] = Model.TrekPackage.Title;
-    var rating = Model.AverageRating;
-    var reviewCount = Model.TotalReviews;
-}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@Model.TrekPackage.Title - Adventure Trekking</title>
-    <meta name="description" content="@Model.TrekPackage.ShortDescription">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>@Model.TrekPackage.Title | @Model.TrekPackage.Duration | Trek Packages @DateTime.Now.Year/@(DateTime.Now.Year + 1)</title>
     <style>
         * {
             margin: 0;
@@ -24,7 +17,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
-            background-color: #f8f9fa;
+            background: #f8f9fa;
         }
 
         .container {
@@ -33,126 +26,154 @@
             padding: 0 20px;
         }
 
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, #2c5aa0 0%, #1e3a5f 100%);
-            color: white;
-            padding: 2rem 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M0,0 L100,0 L100,80 L0,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.5)), url('@Model.TrekPackage.FeaturedImageUrl');
             background-size: cover;
-        }
-
-        .header-content {
+            background-position: center;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            color: white;
             position: relative;
-            z-index: 1;
         }
 
-        .trek-title {
-            font-size: 3rem;
-            font-weight: bold;
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
             margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
 
-        .trek-subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            margin-bottom: 2rem;
-        }
-
-        .trek-meta {
+        .hero-meta {
             display: flex;
             flex-wrap: wrap;
             gap: 2rem;
-            align-items: center;
+            margin: 2rem 0;
         }
 
         .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(255,255,255,0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
+            background: rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
-        .meta-item i {
+        .meta-item h3 {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .meta-item p {
             font-size: 1.1rem;
+            font-weight: 600;
         }
 
-        /* Featured Image */
-        .featured-image {
-            width: 100%;
-            height: 400px;
-            object-fit: cover;
+        .price-badge {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            padding: 1.5rem;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            margin: 2rem 0;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        /* Main Content */
-        .main-content {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 3rem;
-            margin: 2rem 0;
+        .price-badge .price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
         }
 
+        .price-badge .per-person {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            background: white;
+            border-bottom: 2px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-tabs ul {
+            display: flex;
+            list-style: none;
+            overflow-x: auto;
+        }
+
+        .nav-tabs li {
+            white-space: nowrap;
+        }
+
+        .nav-tabs a {
+            display: block;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .nav-tabs a:hover,
+        .nav-tabs a.active {
+            color: #ff6b35;
+            border-bottom-color: #ff6b35;
+        }
+
+        /* Content Sections */
         .content-section {
             background: white;
-            padding: 2rem;
+            margin: 2rem 0;
             border-radius: 15px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
+            overflow: hidden;
         }
 
-        .section-title {
-            font-size: 1.8rem;
-            color: #2c5aa0;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .section-header {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            padding: 2rem;
         }
 
-        .section-title::before {
-            content: '';
-            width: 4px;
-            height: 2rem;
-            background: linear-gradient(135deg, #2c5aa0, #1e3a5f);
-            border-radius: 2px;
+        .section-header h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-content {
+            padding: 2rem;
         }
 
         /* Overview */
-        .overview-description {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            margin-bottom: 1.5rem;
-            color: #555;
+        .overview-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
         }
 
         .key-points {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+        }
+
+        .key-points ul {
             list-style: none;
-            padding: 0;
         }
 
         .key-points li {
             padding: 0.5rem 0;
-            padding-left: 2rem;
-            position: relative;
             border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 2rem;
         }
 
         .key-points li:before {
@@ -161,191 +182,117 @@
             left: 0;
             color: #28a745;
             font-weight: bold;
-            font-size: 1.2rem;
         }
 
         /* Itinerary */
         .itinerary-day {
-            border: 1px solid #e9ecef;
+            background: #f8f9fa;
+            margin: 1rem 0;
             border-radius: 10px;
-            margin-bottom: 1rem;
             overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .itinerary-day:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
+            border-left: 5px solid #ff6b35;
         }
 
         .day-header {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            padding: 1rem 1.5rem;
+            background: white;
+            padding: 1.5rem;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .day-number {
-            background: #2c5aa0;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        .day-title {
-            flex: 1;
-            margin-left: 1rem;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .day-content {
-            padding: 1.5rem;
-            display: none;
-            background: white;
-        }
-
-        .day-content.active {
-            display: block;
+        .day-header h3 {
+            color: #ff6b35;
+            font-size: 1.3rem;
         }
 
         .day-details {
+            padding: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+
+        .day-meta {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
             margin-top: 1rem;
         }
 
-        .detail-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem;
-            background: #f8f9fa;
+        .day-meta-item {
+            background: white;
+            padding: 1rem;
             border-radius: 8px;
         }
 
-        .detail-item i {
-            color: #2c5aa0;
+        .day-meta-item strong {
+            color: #ff6b35;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Pricing */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .pricing-card {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            position: relative;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .pricing-card:hover {
+            border-color: #ff6b35;
+            transform: translateY(-5px);
+        }
+
+        .pricing-card.featured {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-card .price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 1rem 0;
         }
 
         /* Highlights */
         .highlights-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
+            gap: 2rem;
         }
 
         .highlight-card {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 15px;
             text-align: center;
-            padding: 1.5rem;
-            border: 1px solid #e9ecef;
-            border-radius: 10px;
-            transition: all 0.3s ease;
+            transition: transform 0.3s;
         }
 
         .highlight-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            border-color: #2c5aa0;
         }
 
         .highlight-icon {
-            font-size: 2.5rem;
-            color: #2c5aa0;
+            font-size: 3rem;
+            color: #ff6b35;
             margin-bottom: 1rem;
-        }
-
-        .highlight-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #333;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            position: sticky;
-            top: 2rem;
-            height: fit-content;
-        }
-
-        .booking-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .price-display {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #2c5aa0;
-            margin-bottom: 0.5rem;
-        }
-
-        .price-note {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 2rem;
-        }
-
-        .book-now-btn {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 50px;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .book-now-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(40, 167, 69, 0.3);
-        }
-
-        .quick-info {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
-
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .info-item:last-child {
-            border-bottom: none;
-        }
-
-        .info-label {
-            font-weight: 600;
-            color: #555;
-        }
-
-        .info-value {
-            color: #2c5aa0;
-            font-weight: 500;
         }
 
         /* Gallery */
@@ -356,24 +303,24 @@
         }
 
         .gallery-item {
-            position: relative;
-            overflow: hidden;
+            aspect-ratio: 16/9;
+            background: #ddd;
             border-radius: 10px;
-            aspect-ratio: 4/3;
+            overflow: hidden;
+            position: relative;
+            background-image: url('data:image/placeholder');
+            background-size: cover;
+            background-position: center;
         }
 
         .gallery-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.3s ease;
         }
 
-        .gallery-item:hover img {
-            transform: scale(1.1);
-        }
-
-        .gallery-overlay {
+        .gallery-item::after {
+            content: attr(data-caption);
             position: absolute;
             bottom: 0;
             left: 0;
@@ -381,59 +328,20 @@
             background: linear-gradient(transparent, rgba(0,0,0,0.8));
             color: white;
             padding: 1rem;
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
-        }
-
-        .gallery-item:hover .gallery-overlay {
-            transform: translateY(0);
-        }
-
-        /* Reviews */
-        .review-card {
-            border: 1px solid #e9ecef;
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .review-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .reviewer-name {
-            font-weight: 600;
-            color: #333;
-        }
-
-        .review-rating {
-            color: #ffc107;
-        }
-
-        .review-date {
-            color: #666;
             font-size: 0.9rem;
-        }
-
-        .review-text {
-            color: #555;
-            line-height: 1.6;
         }
 
         /* FAQ */
         .faq-item {
-            border: 1px solid #e9ecef;
+            border: 1px solid #eee;
+            margin: 1rem 0;
             border-radius: 10px;
-            margin-bottom: 1rem;
             overflow: hidden;
         }
 
         .faq-question {
-            padding: 1rem 1.5rem;
             background: #f8f9fa;
+            padding: 1.5rem;
             cursor: pointer;
             font-weight: 600;
             display: flex;
@@ -443,465 +351,860 @@
 
         .faq-answer {
             padding: 1.5rem;
+            background: white;
             display: none;
-            color: #555;
-            line-height: 1.6;
         }
 
-        .faq-answer.active {
-            display: block;
+        /* Departures */
+        .departures-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
         }
 
-        /* Responsive Design */
+        .departure-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #28a745;
+        }
+
+        .departure-card.limited {
+            border-left-color: #ffc107;
+        }
+
+        .departure-card.full {
+            border-left-color: #dc3545;
+            opacity: 0.7;
+        }
+
+        /* Responsive */
         media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-                gap: 2rem;
+            .hero-content h1 {
+                font-size: 2.5rem;
             }
 
-            .trek-title {
-                font-size: 2rem;
-            }
-
-            .trek-meta {
+            .hero-meta {
                 flex-direction: column;
-                align-items: flex-start;
                 gap: 1rem;
             }
 
-            .highlights-grid {
+            .price-badge {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 2rem 0;
+            }
+
+            .overview-grid {
                 grid-template-columns: 1fr;
             }
 
-            .gallery-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .day-details {
-                grid-template-columns: 1fr;
+            .nav-tabs ul {
+                flex-direction: column;
             }
         }
 
-        /* Animations */
-        keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .btn {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
         }
 
-        .content-section {
-            animation: fadeInUp 0.6s ease forwards;
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 107, 53, 0.3);
         }
 
-        .content-section:nth-child(even) {
-            animation-delay: 0.1s;
+        .includes-excludes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
         }
 
-        .content-section:nth-child(odd) {
-            animation-delay: 0.2s;
+        .includes-list, .excludes-list {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+        }
+
+        .includes-list h3 {
+            color: #28a745;
+            margin-bottom: 1rem;
+        }
+
+        .excludes-list h3 {
+            color: #dc3545;
+            margin-bottom: 1rem;
+        }
+
+        .includes-list ul, .excludes-list ul {
+            list-style: none;
+        }
+
+        .includes-list li:before {
+            content: '✓';
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .excludes-list li:before {
+            content: '✗';
+            color: #dc3545;
+            font-weight: bold;
+            margin-right: 0.5rem;
         }
 
         .rating-stars {
             color: #ffc107;
-            margin-left: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .review-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 4px solid #ff6b35;
+        }
+
+        media (max-width: 768px) {
+            .includes-excludes-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
+    <!-- Hero Section -->
+    <section class="hero-section">
         <div class="container">
-            <div class="header-content">
-                <h1 class="trek-title">@Model.TrekPackage.Title</h1>
-                <p class="trek-subtitle">@Model.TrekPackage.ShortDescription</p>
-                <div class="trek-meta">
+            <div class="hero-content">
+                <h1>@Model.TrekPackage.Title</h1>
+                <p>@Model.TrekPackage.ShortDescription</p>
+
+                <div class="hero-meta">
                     <div class="meta-item">
-                        <i class="fas fa-clock"></i>
-                        <span>@Model.TrekPackage.Duration</span>
+                        <h3>Duration</h3>
+                        <p>@Model.TrekPackage.Duration</p>
                     </div>
                     <div class="meta-item">
-                        <i class="fas fa-mountain"></i>
-                        <span>@Model.TrekPackage.Difficulty</span>
+                        <h3>Difficulty</h3>
+                        <p>@Model.TrekPackage.Difficulty</p>
                     </div>
                     @if (!string.IsNullOrEmpty(Model.TrekPackage.MaxAltitude))
                     {
                         <div class="meta-item">
-                            <i class="fas fa-arrow-up"></i>
-                            <span>@Model.TrekPackage.MaxAltitude</span>
+                            <h3>Max Altitude</h3>
+                            <p>@Model.TrekPackage.MaxAltitude</p>
                         </div>
                     }
                     @if (!string.IsNullOrEmpty(Model.TrekPackage.TrekkingDistance))
                     {
                         <div class="meta-item">
-                            <i class="fas fa-route"></i>
-                            <span>@Model.TrekPackage.TrekkingDistance</span>
+                            <h3>Distance</h3>
+                            <p>@Model.TrekPackage.TrekkingDistance</p>
                         </div>
                     }
-                    <div class="meta-item">
-                        <i class="fas fa-star"></i>
-                        <span>@rating.ToString("F1") (@reviewCount reviews)</span>
-                    </div>
                 </div>
             </div>
         </div>
-    </header>
 
-    <div class="container">
-        <!-- Featured Image -->
-        @if (!string.IsNullOrEmpty(Model.TrekPackage.FeaturedImageUrl))
-        {
-            <img src="@Model.TrekPackage.FeaturedImageUrl" alt="@Model.TrekPackage.Title" class="featured-image">
-        }
+        <div class="price-badge">
+            <div class="price">@Model.TrekPackage.CostInfo.BasePrice @Model.TrekPackage.CostInfo.BasePrice.ToString("N0")</div>
+            <div class="per-person">per person</div>
+        </div>
+    </section>
 
-        <div class="main-content">
-            <!-- Main Content -->
-            <div class="content-area">
-                <!-- Overview -->
-                <section class="content-section">
-                    <h2 class="section-title">
-                        <i class="fas fa-info-circle"></i>
-                        Trek Overview
-                    </h2>
-                    @if (!string.IsNullOrEmpty(Model.TrekPackage.Overview?.Description.ToString()))
-                    {
-                        <div class="overview-description">
-                            @Html.Raw(Model.TrekPackage.Overview.Description)
-                        </div>
-                    }
-                    @if (Model.TrekPackage.Overview?.KeyPoints?.Any() == true)
-                    {
-                        <ul class="key-points">
-                            @foreach (var point in Model.TrekPackage.Overview.KeyPoints)
-                            {
-                                <li>@point</li>
-                            }
-                        </ul>
-                    }
-                </section>
-
-                <!-- Highlights -->
+    <!-- Navigation -->
+    <nav class="nav-tabs">
+        <div class="container">
+            <ul>
+                <li><a href="#overview" class="active">Overview</a></li>
+                @if (Model.TrekPackage.Itinerary.Days?.Any() == true)
+                {
+                    <li><a href="#itinerary">Itinerary</a></li>
+                }
+                <li><a href="#pricing">Pricing</a></li>
                 @if (Model.TrekPackage.Highlights?.Any() == true)
                 {
-                    <section class="content-section">
-                        <h2 class="section-title">
-                            <i class="fas fa-star"></i>
-                            Trek Highlights
-                        </h2>
-                        <div class="highlights-grid">
-                            @foreach (var highlight in Model.TrekPackage.Highlights.OrderBy(h => h.SortOrder))
-                            {
-                                <div class="highlight-card">
-                                    <div class="highlight-icon">
-                                        <i class="@(!string.IsNullOrEmpty(highlight.IconClass) ? highlight.IconClass : "fas fa-mountain")"></i>
-                                    </div>
-                                    <div class="highlight-title">@highlight.Title</div>
-                                    @if (!string.IsNullOrEmpty(highlight.Description))
-                                    {
-                                        <p>@highlight.Description</p>
-                                    }
-                                </div>
-                            }
-                        </div>
-                    </section>
+                    <li><a href="#highlights">Highlights</a></li>
                 }
-
-                <!-- Itinerary -->
-                @if (Model.TrekPackage.Itinerary?.Days?.Any() == true)
+                @if (Model.IncludesByCategory?.Any() == true || Model.ExcludesByCategory?.Any() == true)
                 {
-                    <section class="content-section">
-                        <h2 class="section-title">
-                            <i class="fas fa-route"></i>
-                            Trek Itinerary
-                        </h2>
-                        
-                        @foreach (var day in Model.TrekPackage.Itinerary.Days.OrderBy(d => d.DayNumber))
-                        {
-                            <div class="itinerary-day">
-                                <div class="day-header" onclick="toggleDay(this)">
-                                    <div class="day-number">@day.DayNumber</div>
-                                    <div class="day-title">@day.Title</div>
-                                    <i class="fas fa-chevron-down"></i>
-                                </div>
-                                <div class="day-content">
-                                    @if (!string.IsNullOrEmpty(day.Description))
-                                    {
-                                        <p>@day.Description</p>
-                                    }
-                                    <div class="day-details">
-                                        @if (!string.IsNullOrEmpty(day.Altitude))
-                                        {
-                                            <div class="detail-item">
-                                                <i class="fas fa-map-marker-alt"></i>
-                                                <span>Altitude: @day.Altitude</span>
-                                            </div>
-                                        }
-                                        @if (!string.IsNullOrEmpty(day.Duration))
-                                        {
-                                            <div class="detail-item">
-                                                <i class="fas fa-clock"></i>
-                                                <span>@day.Duration</span>
-                                            </div>
-                                        }
-                                        @if (!string.IsNullOrEmpty(day.Accommodation))
-                                        {
-                                            <div class="detail-item">
-                                                <i class="fas fa-bed"></i>
-                                                <span>@day.Accommodation</span>
-                                            </div>
-                                        }
-                                        @if (!string.IsNullOrEmpty(day.Meals))
-                                        {
-                                            <div class="detail-item">
-                                                <i class="fas fa-utensils"></i>
-                                                <span>@day.Meals</span>
-                                            </div>
-                                        }
-                                        @if (!string.IsNullOrEmpty(day.Transportation))
-                                        {
-                                            <div class="detail-item">
-                                                <i class="fas fa-car"></i>
-                                                <span>@day.Transportation</span>
-                                            </div>
-                                        }
-                                        @if (!string.IsNullOrEmpty(day.Activities))
-                                        {
-                                            <div class="detail-item">
-                                                <i class="fas fa-hiking"></i>
-                                                <span>@day.Activities</span>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </section>
+                    <li><a href="#includes">Includes/Excludes</a></li>
                 }
-
-                <!-- Gallery -->
                 @if (Model.TrekPackage.GalleryImages?.Any() == true)
                 {
-                    <section class="content-section">
-                        <h2 class="section-title">
-                            <i class="fas fa-images"></i>
-                            Photo Gallery
-                        </h2>
-                        <div class="gallery-grid">
-                            @foreach (var image in Model.TrekPackage.GalleryImages.OrderBy(g => g.SortOrder))
-                            {
-                                <div class="gallery-item">
-                                    <img src="@image.ImageUrl" alt="@image.AltText">
-                                    @if (!string.IsNullOrEmpty(image.Caption))
+                    <li><a href="#gallery">Gallery</a></li>
+                }
+                @if (Model.FAQsByCategory?.Any() == true)
+                {
+                    <li><a href="#faq">FAQ</a></li>
+                }
+                @if (Model.AvailableDepartures?.Any() == true)
+                {
+                    <li><a href="#departures">Departures</a></li>
+                }
+                @if (Model.LatestReviews?.Any() == true)
+                {
+                    <li><a href="#reviews">Reviews</a></li>
+                }
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Overview Section -->
+        <section id="overview" class="content-section">
+            <div class="section-header">
+                <h2>Trek Overview</h2>
+                <p>@Model.TrekPackage.ShortDescription</p>
+            </div>
+            <div class="section-content">
+                <div class="overview-grid">
+                    <div>
+                        @if (!string.IsNullOrEmpty(Model.TrekPackage.Overview.Description))
+                        {
+                            @Html.Raw(Model.TrekPackage.Overview.Description)
+                        }
+
+                        @if (!string.IsNullOrEmpty(Model.TrekPackage.Overview.ImportantNote))
+                        {
+                            <div style="background: #e3f2fd; padding: 1.5rem; border-radius: 10px; margin: 2rem 0; border-left: 5px solid #2196f3;">
+                                <h4 style="color: #1976d2; margin-bottom: 1rem;">Important Note</h4>
+                                <p>@Model.TrekPackage.Overview.ImportantNote</p>
+                            </div>
+                        }
+                    </div>
+
+                    @if (Model.TrekPackage.Overview.KeyPoints?.Any() == true)
+                    {
+                        <div class="key-points">
+                            <h3>Key Points</h3>
+                            <ul>
+                                @foreach (var point in Model.TrekPackage.Overview.KeyPoints)
+                                {
+                                    <li>@point</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+
+        <!-- Itinerary Section -->
+        @if (Model.TrekPackage.Itinerary.Days?.Any() == true)
+        {
+            <section id="itinerary" class="content-section">
+                <div class="section-header">
+                    <h2>Detailed Itinerary</h2>
+                    <p>Day-by-day breakdown of your adventure</p>
+                </div>
+                <div class="section-content">
+                    @foreach (var day in Model.TrekPackage.Itinerary.Days.OrderBy(d => d.DayNumber))
+                    {
+                        <div class="itinerary-day">
+                            <div class="day-header">
+                                <h3>Day @day.DayNumber: @day.Title</h3>
+                                <span>+</span>
+                            </div>
+                            <div class="day-details">
+                                @if (!string.IsNullOrEmpty(day.Description))
+                                {
+                                    <p>@day.Description</p>
+                                }
+                                <div class="day-meta">
+                                    @if (!string.IsNullOrEmpty(day.Altitude))
                                     {
-                                        <div class="gallery-overlay">
-                                            <p>@image.Caption</p>
+                                        <div class="day-meta-item">
+                                            <strong>Altitude:</strong> @day.Altitude
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(day.Duration))
+                                    {
+                                        <div class="day-meta-item">
+                                            <strong>Duration:</strong> @day.Duration
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(day.Accommodation))
+                                    {
+                                        <div class="day-meta-item">
+                                            <strong>Accommodation:</strong> @day.Accommodation
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(day.Meals))
+                                    {
+                                        <div class="day-meta-item">
+                                            <strong>Meals:</strong> @day.Meals
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(day.Activities))
+                                    {
+                                        <div class="day-meta-item">
+                                            <strong>Activities:</strong> @day.Activities
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(day.Transportation))
+                                    {
+                                        <div class="day-meta-item">
+                                            <strong>Transportation:</strong> @day.Transportation
                                         </div>
                                     }
                                 </div>
-                            }
+                            </div>
                         </div>
-                    </section>
-                }
+                    }
+                </div>
+            </section>
+        }
 
-                <!-- Reviews -->
-                @if (Model.LatestReviews?.Any() == true)
+        <!-- Pricing Section -->
+        <section id="pricing" class="content-section">
+            <div class="section-header">
+                <h2>Trek Pricing</h2>
+                <p>Competitive prices with flexible options</p>
+            </div>
+            <div class="section-content">
+                @if (Model.TrekPackage.CostInfo.GroupPricing?.Any() == true)
                 {
-                    <section class="content-section">
-                        <h2 class="section-title">
-                            <i class="fas fa-star"></i>
-                            Traveler Reviews
-                        </h2>
-                        
-                        @foreach (var review in Model.LatestReviews)
+                    <div class="pricing-grid">
+                        @foreach (var pricing in Model.TrekPackage.CostInfo.GroupPricing)
                         {
-                            <div class="review-card">
-                                <div class="review-header">
-                                    <div class="reviewer-info">
-                                        <div class="reviewer-name">@review.ReviewerName</div>
-                                        <div class="review-rating">
-                                            @for (int i = 1; i <= 5; i++)
-                                            {
-                                                @if (i <= review.Rating)
-                                                {
-                                                    <span>★</span>
-                                                }
-                                                else
-                                                {
-                                                    <span style="color: #ddd;">★</span>
-                                                }
-                                            }
-                                        </div>
-                                    </div>
-                                    <div class="review-date">@review.ReviewDate.ToString("MMM dd, yyyy")</div>
-                                </div>
-                                <div class="review-text">
-                                    @review.ReviewText
-                                </div>
+                            <div class="pricing-card @(Model.TrekPackage.CostInfo.GroupPricing.Count() > 1 && pricing == Model.TrekPackage.CostInfo.GroupPricing.ElementAt(1) ? "featured" : "")">
+                                <h3>@pricing.GroupSize</h3>
+                                <div class="price">@Model.TrekPackage.CostInfo.Currency @pricing.PricePerPerson.ToString("N0")</div>
+                                <p>per person</p>
+                                @if (Model.TrekPackage.CostInfo.GroupPricing.Count() > 1 && pricing == Model.TrekPackage.CostInfo.GroupPricing.ElementAt(1))
+                                {
+                                    <span style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem;">Most Popular</span>
+                                }
                             </div>
                         }
-                    </section>
+                    </div>
+                }
+                else
+                {
+                    <div class="pricing-grid">
+                        <div class="pricing-card featured">
+                            <h3>Standard Package</h3>
+                            <div class="price">@Model.TrekPackage.CostInfo.Currency @Model.TrekPackage.CostInfo.BasePrice.ToString("N0")</div>
+                            <p>per person</p>
+                        </div>
+                    </div>
                 }
 
-                <!-- FAQ -->
-                @if (Model.FAQsByCategory?.Any() == true)
+                @if (!string.IsNullOrEmpty(Model.TrekPackage.CostInfo.PriceNote))
                 {
-                    <section class="content-section">
-                        <h2 class="section-title">
-                            <i class="fas fa-question-circle"></i>
-                            Frequently Asked Questions
-                        </h2>
-                        
-                        @foreach (var category in Model.FAQsByCategory)
+                    <div style="background: #f8f9fa; padding: 2rem; border-radius: 10px; margin: 2rem 0;">
+                        <p>@Model.TrekPackage.CostInfo.PriceNote</p>
+                    </div>
+                }
+            </div>
+        </section>
+
+        <!-- Highlights Section -->
+        @if (Model.TrekPackage.Highlights?.Any() == true)
+        {
+            <section id="highlights" class="content-section">
+                <div class="section-header">
+                    <h2>Trek Highlights</h2>
+                    <p>What makes this trek unforgettable</p>
+                </div>
+                <div class="section-content">
+                    <div class="highlights-grid">
+                        @foreach (var highlight in Model.TrekPackage.Highlights.OrderBy(h => h.SortOrder))
                         {
-                            @if (!string.IsNullOrEmpty(category.Key))
+                            <div class="highlight-card">
+                                @if (!string.IsNullOrEmpty(highlight.IconClass))
+                                {
+                                    <div class="highlight-icon">
+                                        <i class="@highlight.IconClass"></i>
+                                    </div>
+                                }
+                                <h3>@highlight.Title</h3>
+                                <p>@highlight.Description</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </section>
+        }
+
+        <!-- Includes/Excludes Section -->
+        @if (Model.IncludesByCategory?.Any() == true || Model.ExcludesByCategory?.Any() == true)
+        {
+            <section id="includes" class="content-section">
+                <div class="section-header">
+                    <h2>What's Included & Excluded</h2>
+                    <p>Complete breakdown of your package</p>
+                </div>
+                <div class="section-content">
+                    <div class="includes-excludes-grid">
+                        @if (Model.IncludesByCategory?.Any() == true)
+                        {
+                            <div class="includes-list">
+                                <h3>✓ Included</h3>
+                                @foreach (var category in Model.IncludesByCategory)
+                                {
+                                    @if (category.Value?.Any() == true)
+                                    {
+                                        @if (!string.IsNullOrEmpty(category.Key) && category.Key != "General")
+                                        {
+                                            <h4 style="margin: 1rem 0 0.5rem 0; color: #28a745;">@category.Key</h4>
+                                        }
+                                        <ul>
+                                            @foreach (var item in category.Value.OrderBy(i => i.SortOrder))
+                                            {
+                                                <li>
+                                                    @item.Item
+                                                    @if (!string.IsNullOrEmpty(item.Description))
+                                                    {
+                                                        <small style="display: block; color: #666; margin-top: 0.2rem;">@item.Description</small>
+                                                    }
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+                                }
+                            </div>
+                        }
+
+                        @if (Model.ExcludesByCategory?.Any() == true)
+                        {
+                            <div class="excludes-list">
+                                <h3>✗ Not Included</h3>
+                                @foreach (var category in Model.ExcludesByCategory)
+                                {
+                                    @if (category.Value?.Any() == true)
+                                    {
+                                        @if (!string.IsNullOrEmpty(category.Key) && category.Key != "General")
+                                        {
+                                            <h4 style="margin: 1rem 0 0.5rem 0; color: #dc3545;">@category.Key</h4>
+                                        }
+                                        <ul>
+                                            @foreach (var item in category.Value.OrderBy(i => i.SortOrder))
+                                            {
+                                                <li>
+                                                    @item.Item
+                                                    @if (!string.IsNullOrEmpty(item.Description))
+                                                    {
+                                                        <small style="display: block; color: #666; margin-top: 0.2rem;">@item.Description</small>
+                                                    }
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </section>
+        }
+
+        <!-- Gallery Section -->
+        @if (Model.TrekPackage.GalleryImages?.Any() == true)
+        {
+            <section id="gallery" class="content-section">
+                <div class="section-header">
+                    <h2>Photo Gallery</h2>
+                    <p>Glimpses of your upcoming adventure</p>
+                </div>
+                <div class="section-content">
+                    <div class="gallery-grid">
+                        @foreach (var image in Model.TrekPackage.GalleryImages.OrderBy(g => g.SortOrder))
+                        {
+                            <div class="gallery-item" data-caption="@image.Caption">
+                                <img src="@image.ImageUrl" alt="@image.AltText" loading="lazy" />
+                            </div>
+                        }
+                    </div>
+                </div>
+            </section>
+        }
+
+        <!-- FAQ Section -->
+        @if (Model.FAQsByCategory?.Any() == true)
+        {
+            <section id="faq" class="content-section">
+                <div class="section-header">
+                    <h2>Frequently Asked Questions</h2>
+                    <p>Everything you need to know about the trek</p>
+                </div>
+                <div class="section-content">
+                    @foreach (var category in Model.FAQsByCategory)
+                    {
+                        @if (category.Value?.Any() == true)
+                        {
+                            @if (!string.IsNullOrEmpty(category.Key) && category.Key != "General")
                             {
-                                <h4 style="color: #2c5aa0; margin: 1.5rem 0 1rem 0;">@category.Key</h4>
+                                <h3 style="margin: 2rem 0 1rem 0; color: #ff6b35;">@category.Key</h3>
                             }
                             @foreach (var faq in category.Value.OrderBy(f => f.SortOrder))
                             {
                                 <div class="faq-item">
-                                    <div class="faq-question" onclick="toggleFAQ(this)">
+                                    <div class="faq-question">
                                         <span>@faq.Question</span>
-                                        <i class="fas fa-chevron-down"></i>
+                                        <span>+</span>
                                     </div>
                                     <div class="faq-answer">
-                                        @Html.Raw(faq.Answer)
+                                        <p>@Html.Raw(faq.Answer)</p>
                                     </div>
                                 </div>
                             }
                         }
-                    </section>
-                }
-            </div>
-
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <!-- Booking Card -->
-                <div class="booking-card">
-                    <div class="price-display">@Model.TrekPackage.CostInfo.Currency @Model.TrekPackage.CostInfo.BasePrice.ToString("N0")</div>
-                    @if (!string.IsNullOrEmpty(Model.TrekPackage.CostInfo.PriceNote))
-                    {
-                        <div class="price-note">@Model.TrekPackage.CostInfo.PriceNote</div>
-                    }
-                    else
-                    {
-                        <div class="price-note">Per person</div>
-                    }
-                    <button class="book-now-btn" onclick="location.href='@Url.Action("Book", new { id = Model.TrekPackage.Id })'">Book Now</button>
-                </div>
-
-                <!-- Quick Info -->
-                <div class="quick-info">
-                    <h3 style="margin-bottom: 1rem; color: #2c5aa0;">Quick Info</h3>
-                    <div class="info-item">
-                        <span class="info-label">Duration</span>
-                        <span class="info-value">@Model.TrekPackage.Duration</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Difficulty</span>
-                        <span class="info-value">@Model.TrekPackage.Difficulty</span>
-                    </div>
-                    @if (!string.IsNullOrEmpty(Model.TrekPackage.MaxAltitude))
-                    {
-                        <div class="info-item">
-                            <span class="info-label">Max Altitude</span>
-                            <span class="info-value">@Model.TrekPackage.MaxAltitude</span>
-                        </div>
-                    }
-                    @if (!string.IsNullOrEmpty(Model.TrekPackage.TrekkingDistance))
-                    {
-                        <div class="info-item">
-                            <span class="info-label">Distance</span>
-                            <span class="info-value">@Model.TrekPackage.TrekkingDistance</span>
-                        </div>
-                    }
-                    @if (!string.IsNullOrEmpty(Model.TrekPackage.StartEndPoint))
-                    {
-                        <div class="info-item">
-                            <span class="info-label">Start/End</span>
-                            <span class="info-value">@Model.TrekPackage.StartEndPoint</span>
-                        </div>
-                    }
-                    @if (!string.IsNullOrEmpty(Model.TrekPackage.BestSeason))
-                    {
-                        <div class="info-item">
-                            <span class="info-label">Best Season</span>
-                            <span class="info-value">@Model.TrekPackage.BestSeason</span>
-                        </div>
-                    }
-                    @if (Model.AvailableDepartures?.Any() == true)
-                    {
-                        <div class="info-item">
-                            <span class="info-label">Next Departure</span>
-                            <span class="info-value">@Model.AvailableDepartures.First().StartDate.ToString("MMM dd, yyyy")</span>
-                        </div>
                     }
                 </div>
+            </section>
+        }
 
-                <!-- Available Departures -->
-                @if (Model.AvailableDepartures?.Any() == true)
-                {
-                    <div class="quick-info" style="margin-top: 1rem;">
-                        <h3 style="margin-bottom: 1rem; color: #2c5aa0;">Available Departures</h3>
-                        @foreach (var departure in Model.AvailableDepartures.Take(5))
+        <!-- Departures Section -->
+        @if (Model.AvailableDepartures?.Any() == true)
+        {
+            <section id="departures" class="content-section">
+                <div class="section-header">
+                    <h2>Available Departures @DateTime.Now.Year/@(DateTime.Now.Year + 1)</h2>
+                    <p>Choose your preferred departure date</p>
+                </div>
+                <div class="section-content">
+                    <div class="departures-grid">
+                        @foreach (var departure in Model.AvailableDepartures)
                         {
-                            <div class="info-item">
-                                <span class="info-label">@departure.StartDate.ToString("MMM dd")</span>
-                                <span class="info-value">@departure.AvailableSpots spots left</span>
+                            <div class="departure-card @(departure.AvailableSpots <= 2 ? "limited" : "") @(departure.AvailableSpots == 0 ? "full" : "")">
+                                <h3>@departure.StartDate.ToString("MMMM dd") - @departure.EndDate.ToString("MMMM dd, yyyy")</h3>
+                                <p><strong>@departure.StartDate.ToString("MMMM") Season</strong></p>
+                                <p>Available Spots: <span style="color: @(departure.AvailableSpots > 2 ? "#28a745" : departure.AvailableSpots > 0 ? "#ffc107" : "#dc3545"); font-weight: bold;">@departure.AvailableSpots/@(departure.AvailableSpots + 5)</span></p>
+                                <p>Price: <strong>@Model.TrekPackage.CostInfo.Currency @departure.Price.ToString("N0") per person</strong></p>
+                                @if (!string.IsNullOrEmpty(departure.Notes))
+                                {
+                                    <p style="color: #666; font-size: 0.9rem;">@departure.Notes</p>
+                                }
+                                @if (departure.AvailableSpots > 0)
+                                {
+                                    <button class="btn" style="width: 100%; margin-top: 1rem; background: @(departure.AvailableSpots <= 2 ? "#ffc107" : "linear-gradient(135deg, #ff6b35, #f7931e)");">
+                                        @(departure.AvailableSpots <= 2 ? "Limited Spots" : "Book Now")
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="btn" style="width: 100%; margin-top: 1rem; background: #6c757d; cursor: not-allowed;" disabled>
+                                        Fully Booked
+                                    </button>
+                                }
                             </div>
                         }
                     </div>
-                }
+
+                    <div style="background: #e8f5e8; padding: 2rem; border-radius: 10px; margin: 2rem 0; text-align: center;">
+                        <h3 style="color: #28a745; margin-bottom: 1rem;">🎉 Special Offers</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; text-align: left;">
+                            <div>
+                                <strong>Early Bird Discount:</strong><br>
+                                Book 6 months in advance and save $200 per person
+                            </div>
+                            <div>
+                                <strong>Group Discount:</strong><br>
+                                Groups of 6+ people get 10% off the total price
+                            </div>
+                            <div>
+                                <strong>Repeat Trekker:</strong><br>
+                                Previous clients get 15% discount on their next trek
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+
+        <!-- Reviews Section -->
+       @*  @if (Model.LatestReviews?.Any() == true)
+        {
+            <section id="reviews" class="content-section">
+                <div class="section-header">
+                    <h2>Customer Reviews</h2>
+                    <p>@Model.TotalReviews reviews with average rating of @Model.AverageRating.ToString("F1") stars</p>
+                </div>
+                <div class="section-content">
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <div class="rating-stars" style="font-size: 2rem;">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <span style="color: @(i <= Math.Round(Model.AverageRating) ? "#ffc107" : "#e0e0e0");">★</span>
+                            }
+                        </div>
+                        <p>@Model.AverageRating.ToString("F1") out of 5 stars (@Model.TotalReviews reviews)</p>
+                    </div>
+
+                    @foreach (var review in Model.LatestReviews)
+                    {
+                        <div class="review-card">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                                <div>
+                                    <h4 style="margin-bottom: 0.5rem;">@review.ReviewerName</h4>
+                                    <div class="rating-stars">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <span style="color: @(i <= review.Rating ? "#ffc107" : "#e0e0e0");">★</span>
+                                        }
+                                    </div>
+                                </div>
+                                <small style="color: #666;">@review.ReviewDate.ToString("MMM yyyy")</small>
+                            </div>
+                            <p>@review.Comment</p>
+                            @if (!string.IsNullOrEmpty(review.TrekMonth))
+                            {
+                                <small style="color: #666; font-style: italic;">Trekked in @review.TrekMonth</small>
+                            }
+                        </div>
+                    }
+
+                    @if (Model.TotalReviews > Model.LatestReviews.Count)
+                    {
+                        <div style="text-align: center; margin-top: 2rem;">
+                            <a href="#" class="btn">View All @Model.TotalReviews Reviews</a>
+                        </div>
+                    }
+                </div> *@
+            </section>
+        }
+
+        <!-- Booking Section -->
+        <section class="content-section">
+            <div class="section-header">
+                <h2>Ready to Book Your Adventure?</h2>
+                <p>Take the first step towards your @Model.TrekPackage.Title dream</p>
             </div>
-        </div>
+            <div class="section-content" style="text-align: center;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin: 2rem 0;">
+                    <div style="background: #f8f9fa; padding: 2rem; border-radius: 15px;">
+                        <h3 style="color: #ff6b35; margin-bottom: 1rem;">📞 Call Us</h3>
+                        <p>Speak directly with our trek experts</p>
+                        <p style="font-size: 1.2rem; font-weight: bold; margin: 1rem 0;">+977-1-4422-874</p>
+                        <p style="color: #666;">Available 24/7 for your queries</p>
+                    </div>
+
+                    <div style="background: #f8f9fa; padding: 2rem; border-radius: 15px;">
+                        <h3 style="color: #ff6b35; margin-bottom: 1rem;">✉️ Email Us</h3>
+                        <p>Get detailed information and quotes</p>
+                        <p style="font-size: 1.2rem; font-weight: bold; margin: 1rem 0;">info@everesttrek.com</p>
+                        <p style="color: #666;">Response within 2 hours</p>
+                    </div>
+
+                    <div style="background: #f8f9fa; padding: 2rem; border-radius: 15px;">
+                        <h3 style="color: #ff6b35; margin-bottom: 1rem;">💬 WhatsApp</h3>
+                        <p>Quick questions and instant support</p>
+                        <p style="font-size: 1.2rem; font-weight: bold; margin: 1rem 0;">+977-984-123-4567</p>
+                        <p style="color: #666;">Chat with us anytime</p>
+                    </div>
+                </div>
+
+                <div style="margin: 3rem 0;">
+                    <a href="#" class="btn" style="font-size: 1.3rem; padding: 1.5rem 3rem; margin: 0 1rem;">Book Now</a>
+                    <a href="#" class="btn" style="background: #28a745; font-size: 1.3rem; padding: 1.5rem 3rem; margin: 0 1rem;">Get Free Quote</a>
+                </div>
+
+                <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 1.5rem; border-radius: 10px; margin: 2rem 0;">
+                    <h4 style="color: #856404; margin-bottom: 1rem;">📋 Booking Requirements</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; text-align: left; color: #856404;">
+                        <div>• Valid passport (6+ months)</div>
+                        <div>• Travel insurance certificate</div>
+                        <div>• Medical fitness certificate</div>
+                        <div>• $500 booking deposit</div>
+                        <div>• Recent passport photos</div>
+                        <div>• Emergency contact details</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        @if (!string.IsNullOrEmpty(Model.TrekPackage.MapImageUrl))
+        {
+            <!-- Map Section -->
+            <section class="content-section">
+                <div class="section-header">
+                    <h2>Trek Route Map</h2>
+                    <p>Visual guide to your trekking route</p>
+                </div>
+                <div class="section-content">
+                    <div style="text-align: center;">
+                        <img src="@Model.TrekPackage.MapImageUrl" alt="@Model.TrekPackage.Title Route Map" style="max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                    </div>
+                </div>
+            </section>
+        }
     </div>
 
+    <footer style="background: #333; color: white; padding: 3rem 0; margin-top: 4rem;">
+        <div class="container">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+                <div>
+                    <h3 style="margin-bottom: 1rem;">About Us</h3>
+                    <p>Leading trekking company in Nepal with 15+ years of experience in organizing safe and memorable Himalayan adventures.</p>
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 1rem;">Quick Links</h3>
+                    <ul style="list-style: none;">
+                        <li><a href="#" style="color: #ccc; text-decoration: none;">Other Treks</a></li>
+                        <li><a href="#" style="color: #ccc; text-decoration: none;">Peak Climbing</a></li>
+                        <li><a href="#" style="color: #ccc; text-decoration: none;">Travel Insurance</a></li>
+                        <li><a href="#" style="color: #ccc; text-decoration: none;">Equipment Rental</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 1rem;">Contact Info</h3>
+                    <p>📍 Thamel, Kathmandu, Nepal</p>
+                    <p>📞 +977-1-4422-874</p>
+                    <p>✉️ info@everesttrek.com</p>
+                    <p>🌐 www.everesttrek.com</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #555;">
+                <p>&copy; @DateTime.Now.Year @Model.TrekPackage.Title. All rights reserved. | Licensed by Nepal Tourism Board</p>
+            </div>
+        </div>
+    </footer>
+
     <script>
-        // Toggle itinerary days
-        function toggleDay(element) {
-            const content = element.nextElementSibling;
-            const icon = element.querySelector('i');
-            
-            if (content.classList.contains('active')) {
-                content.classList.remove('active');
-                icon.style.transform = 'rotate(0deg)';
-            } else {
-                // Close all other days
-                document.querySelectorAll('.day-content').forEach(day => {
-                    day.classList.remove('active');
-                });
-                document.querySelectorAll('.day-header i').forEach(i => {
-                    i.style.transform = 'rotate(0deg)';
-                });
-                
-                // Open current day
-                content.classList.add('active');
-                icon.style.transform = 'rotate(180deg)';
-            }
+        // Simple tab navigation
+        document.querySelectorAll('.nav-tabs a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Remove active class from all links
+                document.querySelectorAll('.nav-tabs a').forEach(l => l.classList.remove('active'));
+
+                // Add active class to clicked link
+                this.classList.add('active');
+
+                // Smooth scroll to section
+                const targetId = this.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // FAQ toggle functionality
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', function() {
+                const answer = this.nextElementSibling;
+                const icon = this.querySelector('span:last-child');
+
+                if (answer.style.display === 'block') {
+                    answer.style.display = 'none';
+                    icon.textContent = '+';
+                } else {
+                    // Close all other FAQs
+                    document.querySelectorAll('.faq-answer').forEach(ans => ans.style.display = 'none');
+                    document.querySelectorAll('.faq-question span:last-child').forEach(ic => ic.textContent = '+');
+
+                    // Open clicked FAQ
+                    answer.style.display = 'block';
+                    icon.textContent = '-';
+                }
+            });
+        });
+
+        // Itinerary day toggle functionality
+        document.querySelectorAll('.day-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const details = this.nextElementSibling;
+                const icon = this.querySelector('span');
+
+                if (details.style.display === 'block') {
+                    details.style.display = 'none';
+                    icon.textContent = '+';
+                } else {
+                    details.style.display = 'block';
+                    icon.textContent = '-';
+                }
+            });
+        });
+
+        // Initialize collapsibles as closed
+        document.querySelectorAll('.faq-answer').forEach(answer => {
+            answer.style.display = 'none';
+        });
+
+        document.querySelectorAll('.day-details').forEach(details => {
+            details.style.display = 'none';
+        });
+
+        // Show first 3 days by default
+        const firstThreeDays = document.querySelectorAll('.day-details');
+        for (let i = 0; i < Math.min(3, firstThreeDays.length); i++) {
+            firstThreeDays[i].style.display = 'block';
+            firstThreeDays[i].previousElementSibling.querySelector('span').textContent = '-';
         }
 
-        // Toggle FAQ items
-        function toggleFAQ(element) {
-            const answer = element.nextElementSibling;
-            const icon = element.querySelector('i');
-            
-            if (answer.classList.contains('active')) {
-                answer.classList.remove('active');
-                icon.style.transform = 'rotate(0deg)';
-            } else {
-                answer.classList.add('active');
-                icon.style.transform = 'rotate(180deg)';
-            }
-        }
+        // Smooth scrolling for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
 
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add any initialization code here
-            console.log('Trek details page loaded');
+        // Update active nav tab on scroll
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('.content-section[id]');
+            const navLinks = document.querySelectorAll('.nav-tabs a');
+
+            let currentSection = '';
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top <= 150 && rect.bottom >= 150) {
+                    currentSection = section.id;
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === currentSection) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Gallery lightbox functionality (basic)
+        document.querySelectorAll('.gallery-item img').forEach(img => {
+            img.addEventListener('click', function() {
+                // You can implement a lightbox modal here
+                console.log('Gallery image clicked:', this.src);
+            });
+        });
+
+        // Booking button functionality
+        document.querySelectorAll('.btn').forEach(btn => {
+            if (btn.textContent.includes('Book Now') || btn.textContent.includes('Get Free Quote')) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Implement booking/quote functionality here
+                    alert('Booking functionality would be implemented here');
+                });
+            }
         });
     </script>
 </body>

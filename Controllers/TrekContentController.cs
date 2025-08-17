@@ -28,7 +28,7 @@ namespace UserRoles.Controllers
         // Option 1: Direct implementation
         public async Task<IActionResult> displayview()
         {
-            int id = 1004;
+            int id = 2015;
             var displayModel = await GetTrekPackageDisplayViewModel(id);
 
             if (displayModel == null)
@@ -56,12 +56,29 @@ namespace UserRoles.Controllers
         private async Task<TrekPackageDisplayViewModel> GetTrekPackageDisplayViewModel(int id)
         
         {
-            var trekPackage = await _context.TrekPackages
+        //         public List<TrekHighlight> Highlights { get; set; } = new List<TrekHighlight>();
+        //public TrekOverview Overview { get; set; }
+        //public TrekItinerary Itinerary { get; set; }
+        //public List<TrekDeparture> Departures { get; set; } = new List<TrekDeparture>();
+        //public TrekCostInfo CostInfo { get; set; }
+        //public List<TrekFAQ> FAQs { get; set; } = new List<TrekFAQ>();
+        //public List<TrekGalleryImage> GalleryImages { get; set; } = new List<TrekGalleryImage>();
+
+        //public List<TrekInclusion> Includes { get; set; } = new List<TrekInclusion>();
+        //public List<TrekInclusion> Excludes { get; set; } = new List<TrekInclusion>();
+        //public List<TrekReview> Reviews { get; set; } = new List<TrekReview>();
+
+        var trekPackage = await _context.TrekPackages
+                 .Include(tp => tp.Highlights)
+                .Include(tp=>tp.Overview)
+                .Include(tp => tp.Itinerary)
+                .Include(tp => tp.Departures)
+                .Include(tp => tp.CostInfo)
                 .Include(tp => tp.FAQs)
+                 .Include(tp => tp.GalleryImages)
                 .Include(tp => tp.Includes)
                 .Include(tp => tp.Excludes)
                 .Include(tp => tp.Reviews)
-                .Include(tp => tp.Departures)
                 .FirstOrDefaultAsync(tp => tp.Id == id);
 
             if (trekPackage == null)
@@ -210,6 +227,7 @@ namespace UserRoles.Controllers
             {
                 trekPackage.Itinerary = new TrekItinerary
                 {
+                    TrekPackage = trekPackage,
                     Days = viewModel.ItineraryDays
                         .Where(day => !string.IsNullOrWhiteSpace(day.Title))
                         .Select(day => new TrekItineraryDay
@@ -230,6 +248,7 @@ namespace UserRoles.Controllers
             // Cost Info
             trekPackage.CostInfo = new TrekCostInfo
             {
+                TrekPackage = trekPackage,
                 BasePrice = viewModel.BasePrice,
                 Currency = viewModel.Currency,
                 PriceNote = viewModel.PriceNote,
@@ -258,6 +277,7 @@ namespace UserRoles.Controllers
                     .Where(faq => !string.IsNullOrWhiteSpace(faq.Question))
                     .Select(faq => new TrekFAQ
                     {
+                        TrekPackage = trekPackage,
                         Category = faq.Category,
                         Question = faq.Question,
                         Answer = faq.Answer,
@@ -271,6 +291,7 @@ namespace UserRoles.Controllers
                     .Where(img => !string.IsNullOrWhiteSpace(img.ImageUrl))
                     .Select(img => new TrekGalleryImage
                     {
+                        TrekPackage = trekPackage,
                         ImageUrl = img.ImageUrl,
                         AltText = img.AltText,
                         Caption = img.Caption,
@@ -285,6 +306,7 @@ namespace UserRoles.Controllers
                     .Where(inc => !string.IsNullOrWhiteSpace(inc.Item))
                     .Select(inc => new TrekInclusion
                     {
+                        TrekPackage = trekPackage,
                         Category = inc.Category,
                         Item = inc.Item,
                         Description = inc.Description,
@@ -299,6 +321,7 @@ namespace UserRoles.Controllers
                     .Where(exc => !string.IsNullOrWhiteSpace(exc.Item))
                     .Select(exc => new TrekInclusion
                     {
+                        TrekPackage = trekPackage,
                         Category = exc.Category,
                         Item = exc.Item,
                         Description = exc.Description,
@@ -313,6 +336,7 @@ namespace UserRoles.Controllers
                     .Where(h => !string.IsNullOrWhiteSpace(h.Title))
                     .Select(h => new TrekHighlight
                     {
+                        TrekPackage = trekPackage,
                         Title = h.Title,
                         Description = h.Description,
                         IconClass = h.IconClass,
@@ -326,6 +350,7 @@ namespace UserRoles.Controllers
                     .Where(d => d.StartDate != default)
                     .Select(d => new TrekDeparture
                     {
+                        TrekPackage = trekPackage,
                         StartDate = d.StartDate,
                         EndDate = d.EndDate,
                         AvailableSpots = d.AvailableSpots,
